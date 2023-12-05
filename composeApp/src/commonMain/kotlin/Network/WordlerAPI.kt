@@ -1,4 +1,5 @@
 package Network
+
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,7 +15,8 @@ object WordlerAPI {
         }
     }
 
-    suspend fun getWords(): List<String> {
-        return client.get("https://random-word-api.herokuapp.com/word?number=10&length=5").body()
+    suspend fun getWords(noWords: Int = 3, length: Int = 5): List<String> {
+        return client.get("https://random-word-api.herokuapp.com/word?number=${noWords}&length=${length}")
+            .body()
     }
 }

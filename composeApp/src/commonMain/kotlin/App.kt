@@ -60,7 +60,7 @@ fun ShowGameBoard() {
 
 
     LaunchedEffect(cnt) {
-        val wordsList = WordlerAPI.getWords()
+        val wordsList = WordlerAPI.getWords(2,7)
         words = wordsList.joinToString()
     }
 
