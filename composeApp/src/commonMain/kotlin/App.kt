@@ -56,12 +56,22 @@ fun ShowLayout() {
 @Composable
 fun ShowGameBoard() {
     var words by remember { mutableStateOf("Words Go Here") }
+    var definition by remember { mutableStateOf("") }
     var cnt by remember { mutableStateOf(0) }
 
 
     LaunchedEffect(cnt) {
-        val wordsList = WordlerAPI.getWords()
-        words = wordsList.joinToString()
+        WordlerAPI.getWords().apply {
+            words = joinToString()
+         WordlerAPI.getDictionaryDefinition(get(0)).apply {
+             onSuccess {
+                 definition = it[0].toString()
+             }
+             onFailure {
+                 definition = "no definition"
+             }
+         }
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -71,6 +81,7 @@ fun ShowGameBoard() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(words)
+            Text(definition.toString())
             Button({
                 cnt++
             }) {
