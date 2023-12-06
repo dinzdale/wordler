@@ -5,7 +5,7 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
-import models.DictionaryItem
+import model.DictionaryItem
 
 object WordlerAPI {
     private val client by lazy {
