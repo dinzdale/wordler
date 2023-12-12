@@ -22,12 +22,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import gameboard.TileRow
+import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileStatus
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kotlin.random.Random
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -48,35 +50,16 @@ fun ShowLayout() {
 
 @Composable
 fun ShowGameBoard() {
-    val words = remember { mutableStateListOf("ABCDE") }
+    var words = remember { mutableStateListOf("ABCDE") }
     var definition by remember { mutableStateOf<String?>(null) }
     var cnt by remember { mutableStateOf(0) }
 
     val scrollState = rememberScrollState()
 
 
-    fun getMockTileDataList(word: String, definition:String?): List<TileData> {
-        val charArray = word.toCharArray()
-        if (charArray.isNotEmpty() && definition != null) {
-            return listOf(
-                TileData(charArray[0], TileStatus.MATCH_IN_POSITION, 0),
-                TileData(charArray[1], TileStatus.MATCH_OUT_POSITION, 1),
-                TileData(charArray[2], TileStatus.MATCH_IN_POSITION, 2),
-                TileData(charArray[3], TileStatus.NO_MATCH, 3),
-                TileData(charArray[4], TileStatus.NO_MATCH, 4),
-            )
-        } else {
-            return listOf(
-                TileData('X', TileStatus.EMPTY, 0),
-                TileData('X', TileStatus.EMPTY, 1),
-                TileData('X', TileStatus.EMPTY, 2),
-                TileData('X', TileStatus.EMPTY, 3),
-                TileData('X', TileStatus.EMPTY, 4),
-            )
-        }
-    }
+
     LaunchedEffect(cnt) {
-        WordlerAPI.getWords().apply {
+        WordlerAPI.getWords(noWords = 3, length = Random.nextInt(2, 5)).apply {
             onSuccess { wordList ->
                 words.clear()
                 words.addAll(wordList.map { it.uppercase() })
@@ -96,19 +79,25 @@ fun ShowGameBoard() {
     }
     Box(
         modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TileRow(getMockTileDataList(words[0],definition))
+            if (words.isNotEmpty()) {
+                TileRow(getMockTileDataList(words[0], definition))
+            }
             Spacer(Modifier.height(5.dp))
             Text(words.joinToString())
             Spacer(Modifier.height(5.dp))
             definition?.also {
-                Text(it, modifier = Modifier.padding(horizontal = 5.dp))
+                Text(
+                    it,
+                    modifier = Modifier.padding(horizontal = 50.dp),
+                    textAlign = TextAlign.Start
+                )
             }
             Spacer(Modifier.height(20.dp))
             Button({
@@ -118,5 +107,26 @@ fun ShowGameBoard() {
             }
         }
     }
+
+}
+
+fun getMockTileDataList(word: String, definition: String?): RowData {
+    val charArray = word.toCharArray()
+    val defaultList = mutableListOf(
+        TileData('X', TileStatus.EMPTY, 0),
+        TileData('X', TileStatus.EMPTY, 1),
+        TileData('X', TileStatus.EMPTY, 2),
+        TileData('X', TileStatus.EMPTY, 3),
+        TileData('X', TileStatus.EMPTY, 4)
+    )
+    return definition?.let {
+        val tempList = charArray.mapIndexed() { index, char ->
+            TileData(charArray[index], TileStatus.values()[Random.nextInt(1, 4)], index)
+        }
+        tempList.forEachIndexed { index, tileData ->
+            defaultList[index] = tileData
+        }
+         RowData(defaultList, 0)
+    }  ?: RowData(defaultList, 0)
 
 }

@@ -25,4 +25,5 @@ enum class PieceColor(val backGround: Color, val foreGround: Color) {
 }
 
 
-data class TileData(val char: Char, val status: TileStatus, val rowPosition: Int = 0)
+data class TileData(val char: Char, val status: TileStatus, val columnPosition: Int = 0)
+data class RowData(val tileData:List<TileData>, val rowPosition: Int = 0)
