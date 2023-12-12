@@ -26,9 +26,7 @@ fun TileRow(
         val tileData = rowData.tileData
         for (i in 0..tileData.lastIndex) {
             Tile(tileData[i])
-            if (i < tileData.lastIndex) {
-                Spacer(Modifier.width(5.dp))
-            }
+            Spacer(Modifier.width(5.dp))
         }
         for (i in rowData.tileData.size..4) {
             Tile(TileData('X', TileStatus.EMPTY, i))

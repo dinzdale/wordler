@@ -20,7 +20,7 @@ fun Tile(tileData: TileData = TileData('Q',TileStatus.EMPTY)) {
     Box(
         Modifier
             .background(color = PieceColor.getColor(tileData).backGround)
-            .size(50.dp),
+            .size(60.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(tileData.char.toString(), color = PieceColor.getColor(tileData).foreGround, style = TextStyle(fontSize = 38.sp))
