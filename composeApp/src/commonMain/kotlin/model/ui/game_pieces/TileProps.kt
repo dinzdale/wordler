@@ -8,11 +8,11 @@ enum class TileStatus {
 
 enum class PieceColor(val backGround: Color, val foreGround: Color) {
     INITIAL(Color.Black, Color.Black),
-    MATCH_IN_POSITION(Color.Green, Color.White),
-    MATCH_OUT_POSITION(Color.Yellow, Color.White);
+    MATCH_IN_POSITION(Color(red = 70, 235, 52), Color.White),
+    MATCH_OUT_POSITION(Color(red = 235, 204, 52), Color.White);
 
     companion object {
-        fun getColor(tileData: TileData) : PieceColor {
+        fun getColor(tileData: TileData): PieceColor {
             return when (tileData.status) {
                 TileStatus.INITIAL -> INITIAL
                 TileStatus.MATCH_IN_POSITION -> MATCH_IN_POSITION
@@ -23,4 +23,4 @@ enum class PieceColor(val backGround: Color, val foreGround: Color) {
 }
 
 
-data class TileData(val char: Char, val status: TileStatus)
+data class TileData(val char: Char, val status: TileStatus, val rowPosition: Int = 0)
