@@ -3,15 +3,8 @@ package gameboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -23,7 +16,7 @@ import model.ui.game_pieces.TileStatus
 
 @Composable
 fun Tile(tileData: TileData = TileData('Q',TileStatus.EMPTY)) {
-    var tiledata by remember { mutableStateOf(tileData) }
+//    var tiledata by remember { mutableStateOf(tileData) }
     Box(
         Modifier
             .background(color = PieceColor.getColor(tileData).backGround)

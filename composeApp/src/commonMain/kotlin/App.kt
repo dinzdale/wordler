@@ -1,6 +1,4 @@
 import Network.WordlerAPI
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,35 +13,20 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import gameboard.TileRow
+import model.ui.game_pieces.TileData
+import model.ui.game_pieces.TileStatus
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
-//    MaterialTheme {
-//        var greetingText by remember { mutableStateOf("Hello World!") }
-//        var showImage by remember { mutableStateOf(false) }
-//        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-//            Button(onClick = {
-//                greetingText = "Compose: ${Greeting().greet()}"
-//                showImage = !showImage
-//            }) {
-//                Text(greetingText)
-//            }
-//            AnimatedVisibility(showImage) {
-//                Image(
-//                    painterResource("compose-multiplatform.xml"),
-//                    null
-//                )
-//            }
-//        }
-//    }
     ShowLayout()
 }
 
@@ -60,16 +43,28 @@ fun ShowLayout() {
 
 @Composable
 fun ShowGameBoard() {
-    var words by remember { mutableStateOf("Words Go Here") }
+    val words = remember { mutableStateListOf("ABCDE") }
     var definition by remember { mutableStateOf("") }
     var cnt by remember { mutableStateOf(0) }
 
     val scrollState = rememberScrollState()
 
+
+    fun getMockTileDataList(word: String): List<TileData> {
+        val charArray = word.toCharArray()
+        return listOf(
+            TileData(charArray[0], TileStatus.MATCH_IN_POSITION, 0),
+            TileData(charArray[1], TileStatus.MATCH_OUT_POSITION, 1),
+            TileData(charArray[2], TileStatus.MATCH_IN_POSITION, 2),
+            TileData(charArray[3], TileStatus.NO_MATCH, 3),
+            TileData(charArray[4], TileStatus.NO_MATCH, 4),
+        )
+    }
     LaunchedEffect(cnt) {
         WordlerAPI.getWords().apply {
             onSuccess { wordList ->
-                words = wordList.joinToString()
+                words.clear()
+                words.addAll(wordList.map { it.uppercase() })
                 WordlerAPI.getDictionaryDefinition(wordList[0]).apply {
                     onSuccess { itemsList ->
                         definition = itemsList[0].toString()
@@ -84,16 +79,18 @@ fun ShowGameBoard() {
             }
         }
     }
-
-    Box(modifier = Modifier.fillMaxSize().verticalScroll(scrollState), contentAlignment = Alignment.TopCenter) {
+    Box(
+        modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+        contentAlignment = Alignment.TopCenter
+    ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TileRow()
-            Text(words)
-            Text(definition.toString())
+            TileRow(getMockTileDataList(words[0]))
+            Text(words.joinToString())
+            Text(definition)
             Button({
                 cnt = ++cnt % 2
             }) {
@@ -101,4 +98,5 @@ fun ShowGameBoard() {
             }
         }
     }
+
 }
