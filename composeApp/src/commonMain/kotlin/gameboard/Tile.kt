@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import model.ui.game_pieces.PieceColor
@@ -35,32 +34,32 @@ fun Tile(tileData: TileData = TileData('Q',TileStatus.EMPTY)) {
     }
 }
 
-@Composable
-@Preview
-fun PreviewTileInitial() {
-    MaterialTheme {
-        Surface(Modifier.wrapContentSize()) {
-            Tile()
-        }
-    }
-}
-
-@Composable
-@Preview
-fun PreviewTileMatchInPosition() {
-    MaterialTheme {
-        Surface(Modifier.wrapContentSize()) {
-            Tile(TileData('Q',TileStatus.MATCH_IN_POSITION))
-        }
-    }
-}
-
-@Composable
-@Preview
-fun PreviewTileMatchOutPosition() {
-    MaterialTheme {
-        Surface(Modifier.wrapContentSize()) {
-            Tile(TileData('Q',TileStatus.MATCH_OUT_POSITION))
-        }
-    }
-}
+//@Composable
+//@Preview
+//fun PreviewTileInitial() {
+//    MaterialTheme {
+//        Surface(Modifier.wrapContentSize()) {
+//            Tile()
+//        }
+//    }
+//}
+//
+//@Composable
+//@Preview
+//fun PreviewTileMatchInPosition() {
+//    MaterialTheme {
+//        Surface(Modifier.wrapContentSize()) {
+//            Tile(TileData('Q',TileStatus.MATCH_IN_POSITION))
+//        }
+//    }
+//}
+//
+//@Composable
+//@Preview
+//fun PreviewTileMatchOutPosition() {
+//    MaterialTheme {
+//        Surface(Modifier.wrapContentSize()) {
+//            Tile(TileData('Q',TileStatus.MATCH_OUT_POSITION))
+//        }
+//    }
+//}

@@ -8,7 +8,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileStatus
@@ -38,12 +38,12 @@ fun TileRow(
     }
 }
 
-@Composable
-@Preview
-fun PreviewRow() {
-    MaterialTheme {
-        Surface(Modifier.wrapContentSize()) {
-            TileRow()
-        }
-    }
-}
+//@Composable
+//@Preview
+//fun PreviewRow() {
+//    MaterialTheme {
+//        Surface(Modifier.wrapContentSize()) {
+//            TileRow()
+//        }
+//    }
+//}
