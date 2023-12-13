@@ -34,7 +34,7 @@ enum class PieceColor(val backGround: Color, val foreGround: Color) {
 }
 
 enum class KeyType {
-    ALPHA, ENTER, RETURN
+    ALPHA, ENTER, DELETE
 }
 
 sealed class TileKeyData()

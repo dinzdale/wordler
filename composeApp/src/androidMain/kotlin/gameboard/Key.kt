@@ -26,10 +26,9 @@ import model.ui.game_pieces.TileKeyStatus
 @Composable
 fun Key(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     when (keyData.keyType) {
-        // ALPHA, ENTER, RETURN
-        KeyType.ALPHA -> {}
-        KeyType.ENTER -> {}
-        KeyType.RETURN -> {}
+        KeyType.ALPHA -> AlphaKey(keyData, onKeySelection)
+        KeyType.ENTER -> EnterKey(keyData, onKeySelection)
+        KeyType.DELETE -> DeleteKey(keyData, onKeySelection)
     }
 }
 
@@ -38,7 +37,9 @@ fun AlphaKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     val (backGround, foreGround) = PieceColor.getColor(keyData)
     Button(
         { onKeySelection(keyData) },
-        Modifier.width(36.dp).height(48.dp),
+        Modifier
+            .width(36.dp)
+            .height(48.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
 
         ) {
@@ -47,12 +48,40 @@ fun AlphaKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
 }
 
 @Composable
+fun EnterKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
+    val (backGround, foreGround) = PieceColor.getColor(keyData)
+    Button(
+        { onKeySelection(keyData) },
+        Modifier
+            .width(96.dp)
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
+
+        ) {
+        Text("ENTER", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 14.sp))
+    }
+}
+@Composable
+fun DeleteKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
+    val (backGround, foreGround) = PieceColor.getColor(keyData)
+    Button(
+        { onKeySelection(keyData) },
+        Modifier
+            .width(96.dp)
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
+
+        ) {
+        Text("DELETE", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 14.sp))
+    }
+}
+@Composable
 @Preview
 fun PreviewAlphaKey() {
     MaterialTheme {
         Surface(Modifier.fillMaxSize()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AlphaKey(keyData = KeyData('Q', KeyType.ALPHA, TileKeyStatus.MATCH_IN_POSITION)) {
+                Key(keyData = KeyData('Q', KeyType.ALPHA, TileKeyStatus.INITIAL_KEY)) {
 
                 }
             }
@@ -60,3 +89,30 @@ fun PreviewAlphaKey() {
     }
 }
 
+@Composable
+@Preview
+fun PreviewEnterKey() {
+    MaterialTheme {
+        Surface(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Key(keyData = KeyData('Q', KeyType.ENTER, TileKeyStatus.INITIAL_KEY)) {
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun PreviewDeleteKey() {
+    MaterialTheme {
+        Surface(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Key(keyData = KeyData('Q', KeyType.DELETE, TileKeyStatus.INITIAL_KEY)) {
+
+                }
+            }
+        }
+    }
+}
