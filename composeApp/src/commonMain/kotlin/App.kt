@@ -25,10 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import gameboard.GameBoard
-import gameboard.TileRow
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
-import model.ui.game_pieces.TileStatus
+import model.ui.game_pieces.TileKeyStatus
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import kotlin.random.Random
 
@@ -114,15 +113,15 @@ fun ShowGameBoard() {
 fun getMockTileDataList(word: String, definition: String?): RowData {
     val charArray = word.toCharArray()
     val defaultList = mutableListOf(
-        TileData('X', TileStatus.EMPTY, 0),
-        TileData('X', TileStatus.EMPTY, 1),
-        TileData('X', TileStatus.EMPTY, 2),
-        TileData('X', TileStatus.EMPTY, 3),
-        TileData('X', TileStatus.EMPTY, 4)
+        TileData('X', TileKeyStatus.EMPTY, 0),
+        TileData('X', TileKeyStatus.EMPTY, 1),
+        TileData('X', TileKeyStatus.EMPTY, 2),
+        TileData('X', TileKeyStatus.EMPTY, 3),
+        TileData('X', TileKeyStatus.EMPTY, 4)
     )
     return definition?.let {
         val tempList = charArray.mapIndexed() { index, char ->
-            TileData(charArray[index], TileStatus.values()[Random.nextInt(1, 4)], index)
+            TileData(charArray[index], TileKeyStatus.values()[Random.nextInt(1, 4)], index)
         }
         tempList.forEachIndexed { index, tileData ->
             defaultList[index] = tileData

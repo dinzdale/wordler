@@ -4,7 +4,6 @@ package gameboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -12,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
-import model.ui.game_pieces.TileStatus
+import model.ui.game_pieces.TileKeyStatus
 
 @Composable
 fun TileRow(
@@ -31,7 +30,7 @@ fun TileRow(
             }
         }
         for (i in rowData.tileData.size..4) {
-            Tile(TileData('X', TileStatus.EMPTY, i))
+            Tile(TileData('X', TileKeyStatus.EMPTY, i))
             Spacer(Modifier.width(5.dp))
         }
     }
