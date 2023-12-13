@@ -1,4 +1,4 @@
-package gameboard
+package keyboard
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,7 +43,7 @@ fun AlphaKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
         colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
 
         ) {
-        Text("Q", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 24.sp))
+        Text(keyData.char.toString(), textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 24.sp))
     }
 }
 
