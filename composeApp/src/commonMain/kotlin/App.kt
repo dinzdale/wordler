@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import gameboard.GameBoard
 import gameboard.TileRow
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
@@ -59,7 +60,7 @@ fun ShowGameBoard() {
 
 
     LaunchedEffect(cnt) {
-        WordlerAPI.getWords(noWords = 3, length = Random.nextInt(2, 5)).apply {
+        WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 5)).apply {
             onSuccess { wordList ->
                 words.clear()
                 words.addAll(wordList.map { it.uppercase() })
@@ -87,7 +88,7 @@ fun ShowGameBoard() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (words.isNotEmpty()) {
-                TileRow(getMockTileDataList(words[0], definition))
+                GameBoard(words.map { getMockTileDataList(it,definition) })
             }
             Spacer(Modifier.height(5.dp))
             Text(words.joinToString())
@@ -130,3 +131,4 @@ fun getMockTileDataList(word: String, definition: String?): RowData {
     }  ?: RowData(defaultList, 0)
 
 }
+
