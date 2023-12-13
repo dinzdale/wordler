@@ -59,7 +59,7 @@ fun ShowGameBoard() {
 
 
     LaunchedEffect(cnt) {
-        WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 5)).apply {
+        WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 6)).apply {
             onSuccess { wordList ->
                 words.clear()
                 words.addAll(wordList.map { it.uppercase() })
