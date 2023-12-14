@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import gameboard.GameBoard
+import keyboard.PreviewKeyBoard
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
@@ -105,6 +106,7 @@ fun ShowGameBoard() {
             }) {
                 Text("Get more words")
             }
+            PreviewKeyBoard()
         }
     }
 

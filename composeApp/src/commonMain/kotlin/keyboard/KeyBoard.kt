@@ -13,7 +13,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.KeyBoardRowData
 import model.ui.game_pieces.KeyData
@@ -42,7 +42,7 @@ fun KeyBoard(
 }
 
 @Composable
-@Preview
+//@Preview
 fun PreviewKeyBoard() {
     var rowData = remember {
         mutableStateListOf(
