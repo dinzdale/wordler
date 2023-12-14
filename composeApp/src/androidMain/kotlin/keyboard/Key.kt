@@ -43,7 +43,7 @@ fun AlphaKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
         colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
 
         ) {
-        Text(keyData.char.toString(), textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 24.sp))
+        Text(keyData.char.toString(), textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 20.sp))
     }
 }
 
@@ -53,12 +53,12 @@ fun EnterKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     Button(
         { onKeySelection(keyData) },
         Modifier
-            .width(96.dp)
+            .width(64.dp)
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
 
         ) {
-        Text("ENTER", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 14.sp))
+        Text("ENT", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 12.sp))
     }
 }
 @Composable
@@ -67,12 +67,12 @@ fun DeleteKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     Button(
         { onKeySelection(keyData) },
         Modifier
-            .width(96.dp)
+            .width(64.dp)
             .height(48.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
 
         ) {
-        Text("DELETE", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 14.sp))
+        Text("DEL", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 12.sp))
     }
 }
 @Composable
