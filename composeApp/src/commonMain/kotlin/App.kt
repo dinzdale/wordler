@@ -57,7 +57,7 @@ fun ShowGameBoard() {
     var definition by remember { mutableStateOf<String?>(null) }
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember { mutableStateOf(KeyData('Q',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
-
+     var restKeyboard by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
 
@@ -110,9 +110,13 @@ fun ShowGameBoard() {
             }) {
                 Text("Get more words")
             }
-            KeyBoard(keyData) {
-                if (it.keyType == KeyType.ALPHA) {
-                    keyData = keyData.copy(it.char)
+            KeyBoard(keyData,restKeyboard,{
+                restKeyboard = false
+            }) {
+                when(it.keyType) {
+                    KeyType.ALPHA -> keyData = keyData.copy(it.char)
+                    KeyType.DELETE -> restKeyboard = true
+                    KeyType.ENTER -> {}
                 }
             }
         }

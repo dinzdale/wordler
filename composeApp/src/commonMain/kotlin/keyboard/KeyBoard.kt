@@ -1,23 +1,18 @@
 package keyboard
 
 //import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
@@ -26,6 +21,8 @@ import model.ui.game_pieces.TileKeyStatus
 @Composable
 fun KeyBoard(
     keyData: KeyData,
+    reset: Boolean,
+    onResetKeyboardComplete: () -> Unit,
     onSelectedKey: (KeyData) -> Unit
 ) {
     val topRow = remember {
@@ -68,18 +65,36 @@ fun KeyBoard(
             KeyData('!', KeyType.DELETE)
         )
     }
-    if (keyData.keyType == KeyType.ALPHA) {
-        var index = topRow.indexOfFirst { it.char == keyData.char }
-        if (index != -1) {
-            topRow[index] = keyData
-        } else {
-            index = middleRow.indexOfFirst { it.char == keyData.char }
+
+    @Composable
+    fun ResetKeys(reset: Boolean) {
+        if (reset) {
+            for (index in 0..topRow.lastIndex) {
+                topRow[index] = topRow[index].copy(status = TileKeyStatus.INITIAL_KEY)
+            }
+            for (index in 0..middleRow.lastIndex) {
+                middleRow[index] = middleRow[index].copy(status = TileKeyStatus.INITIAL_KEY)
+            }
+            for (index in 0..bottomRow.lastIndex) {
+                bottomRow[index] = bottomRow[index].copy(status = TileKeyStatus.INITIAL_KEY)
+            }
+            onResetKeyboardComplete()
+        }
+    }
+    LaunchedEffect(keyData) {
+        if (keyData.keyType == KeyType.ALPHA) {
+            var index = topRow.indexOfFirst { it.char == keyData.char }
             if (index != -1) {
-                middleRow[index] = keyData
+                topRow[index] = keyData
             } else {
-                index = bottomRow.indexOfFirst { it.char == keyData.char }
+                index = middleRow.indexOfFirst { it.char == keyData.char }
                 if (index != -1) {
-                    bottomRow[index] = keyData
+                    middleRow[index] = keyData
+                } else {
+                    index = bottomRow.indexOfFirst { it.char == keyData.char }
+                    if (index != -1) {
+                        bottomRow[index] = keyData
+                    }
                 }
             }
         }
@@ -97,17 +112,18 @@ fun KeyBoard(
         Spacer(Modifier.height(5.dp))
         KeyBoardRow(bottomRow, onSelectedKey)
     }
-}
+    ResetKeys(reset)
 
-@Composable
-//@Preview
-fun PreviewKeyBoard() {
-    MaterialTheme {
-        var keyData by remember { mutableStateOf(KeyData('F',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
-        Surface(Modifier.fillMaxSize()) {
-            KeyBoard(keyData) {
-                  keyData = it
-            }
-        }
-    }
+
+//@Composable
+////@Preview
+//fun PreviewKeyBoard() {
+//    MaterialTheme {
+//        var keyData by remember { mutableStateOf(KeyData('F',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
+//        Surface(Modifier.fillMaxSize()) {
+//            KeyBoard(keyData) {
+//                  keyData = it
+//            }
+//        }
+//    }
 }
