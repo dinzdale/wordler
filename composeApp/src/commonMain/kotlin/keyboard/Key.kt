@@ -1,12 +1,15 @@
 package keyboard
 
 //import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,84 +32,97 @@ fun Key(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
 @Composable
 fun AlphaKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     val (backGround, foreGround) = PieceColor.getColor(keyData)
-    Button(
-        { onKeySelection(keyData) },
-        Modifier
-            .width(36.dp)
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
-
-        ) {
-        Text(keyData.char.toString(), textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 20.sp))
+    Box(
+        Modifier.width(36.dp).height(48.dp).background(backGround, RoundedCornerShape(10.dp))
+            .clickable { onKeySelection(keyData) },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            keyData.char.toString(),
+            style = TextStyle(
+                color = foreGround,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        )
     }
 }
 
 @Composable
 fun EnterKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     val (backGround, foreGround) = PieceColor.getColor(keyData)
-    Button(
-        { onKeySelection(keyData) },
+    Box(
         Modifier
             .width(64.dp)
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
-
-        ) {
-        Text("ENT", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 12.sp))
+            .height(48.dp).background(backGround, RoundedCornerShape(5.dp))
+            .clickable { onKeySelection(keyData) },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            "ENT",
+            textAlign = TextAlign.Center,
+            style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        )
     }
 }
+
 @Composable
 fun DeleteKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
     val (backGround, foreGround) = PieceColor.getColor(keyData)
-    Button(
-        { onKeySelection(keyData) },
+    Box(
         Modifier
             .width(64.dp)
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(backgroundColor = backGround),
-
-        ) {
-        Text("DEL", textAlign = TextAlign.Center, style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 12.sp))
+            .height(48.dp).background(backGround, RoundedCornerShape(5.dp))
+            .clickable { onKeySelection(keyData) },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            "DEL",
+            textAlign = TextAlign.Center,
+            style = TextStyle(color = foreGround, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        )
     }
 }
-//@Composable
-//@Preview
-//fun PreviewAlphaKey() {
-//    MaterialTheme {
-//        Surface(Modifier.fillMaxSize()) {
-//            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                Key(keyData = KeyData('Q', KeyType.ALPHA, TileKeyStatus.INITIAL_KEY)) {
-//
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Composable
-//@Preview
-//fun PreviewEnterKey() {
-//    MaterialTheme {
-//        Surface(Modifier.fillMaxSize()) {
-//            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                Key(keyData = KeyData('Q', KeyType.ENTER, TileKeyStatus.INITIAL_KEY)) {
-//
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Composable
-//@Preview
-//fun PreviewDeleteKey() {
-//    MaterialTheme {
-//        Surface(Modifier.fillMaxSize()) {
-//            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                Key(keyData = KeyData('Q', KeyType.DELETE, TileKeyStatus.INITIAL_KEY)) {
-//
-//                }
-//            }
-//        }
-//    }
-//}
+/*
+@Composable
+@Preview
+fun PreviewAlphaKey() {
+    MaterialTheme {
+        Surface(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Key(keyData = KeyData('Q', KeyType.ALPHA, TileKeyStatus.INITIAL_KEY)) {
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun PreviewEnterKey() {
+    MaterialTheme {
+        Surface(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Key(keyData = KeyData('Q', KeyType.ENTER, TileKeyStatus.INITIAL_KEY)) {
+
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@Preview
+fun PreviewDeleteKey() {
+    MaterialTheme {
+        Surface(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Key(keyData = KeyData('Q', KeyType.DELETE, TileKeyStatus.INITIAL_KEY)) {
+
+                }
+            }
+        }
+    }
+}
+*/
