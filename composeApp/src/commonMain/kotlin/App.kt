@@ -111,7 +111,9 @@ fun ShowGameBoard() {
                 Text("Get more words")
             }
             KeyBoard(keyData) {
-                keyData = it
+                if (it.keyType == KeyType.ALPHA) {
+                    keyData = keyData.copy(it.char)
+                }
             }
         }
     }
