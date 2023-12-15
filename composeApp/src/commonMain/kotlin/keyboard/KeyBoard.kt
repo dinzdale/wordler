@@ -29,7 +29,7 @@ fun KeyBoard(
     onSelectedKey: (KeyData) -> Unit
 ) {
     val topRow = remember {
-        mutableListOf(
+        mutableStateListOf(
             KeyData('Q'),
             KeyData('W'),
             KeyData('E'),

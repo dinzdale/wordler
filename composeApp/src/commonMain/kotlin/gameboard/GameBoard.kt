@@ -22,7 +22,7 @@ fun GameBoard(rows: List<RowData>) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Spacer(Modifier.height(5.dp))
-        rows.forEachIndexed() { index, rowData ->
+        rows.forEach { rowData ->
             TileRow(rowData)
             Spacer(Modifier.height(5.dp))
         }

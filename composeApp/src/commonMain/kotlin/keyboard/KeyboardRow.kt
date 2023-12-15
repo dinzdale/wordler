@@ -14,9 +14,9 @@ import model.ui.game_pieces.KeyData
 
 
 @Composable
-fun KeyBoardRow(keyMap: List<KeyData>, onKeySelected: (KeyData)->Unit) {
+fun KeyBoardRow(keyList: List<KeyData>, onKeySelected: (KeyData)->Unit) {
     Row(Modifier.wrapContentSize(),horizontalArrangement = Arrangement.SpaceAround) {
-        keyMap.forEach {
+        keyList.forEach {
             Key(it,onKeySelected)
             Spacer(Modifier.width(3.dp))
         }

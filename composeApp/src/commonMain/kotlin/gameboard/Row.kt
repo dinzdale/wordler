@@ -25,11 +25,11 @@ fun TileRow(
         Spacer(Modifier.width(5.dp))
         for (i in 0..tileData.lastIndex) {
             Tile(tileData[i])
-            if (i <= tileData.lastIndex) {
+            if (i <= rowData.tileData.lastIndex) {
                 Spacer(Modifier.width(5.dp))
             }
         }
-        for (i in rowData.tileData.size..4) {
+        for (i in tileData.size..4) {
             Tile(TileData('X', TileKeyStatus.EMPTY, i))
             Spacer(Modifier.width(5.dp))
         }
