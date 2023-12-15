@@ -39,7 +39,7 @@ fun KeyBoard(
             KeyData('U'),
             KeyData('I'),
             KeyData('O'),
-            KeyData('P'),
+            KeyData('P')
         )
     }
     val middleRow = remember {
@@ -103,7 +103,7 @@ fun KeyBoard(
 //@Preview
 fun PreviewKeyBoard() {
     MaterialTheme {
-        var keyData by remember { mutableStateOf(KeyData('G',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
+        var keyData by remember { mutableStateOf(KeyData('F',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
         Surface(Modifier.fillMaxSize()) {
             KeyBoard(keyData) {
                   keyData = it

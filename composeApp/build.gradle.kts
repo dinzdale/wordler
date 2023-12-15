@@ -43,6 +43,7 @@ kotlin {
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation("io.ktor:ktor-client-java:$ktorVersion")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
