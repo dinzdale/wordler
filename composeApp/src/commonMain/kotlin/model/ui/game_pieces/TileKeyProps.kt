@@ -41,13 +41,13 @@ sealed class TileKeyData()
 data class TileData(val char: Char, val status: TileKeyStatus, val columnPosition: Int = 0) :
     TileKeyData()
 
-data class KeyData(val char: Char? = null, val keyType: KeyType, val status: TileKeyStatus, val columnPosition: Int=0) :
+data class KeyData(val char: Char? = null, val keyType: KeyType = KeyType.ALPHA, val status: TileKeyStatus = TileKeyStatus.INITIAL_KEY) :
     TileKeyData()
 
 
 data class RowData(val tileData: List<TileData>, val rowPosition: Int = 0)
 
 
-data class KeyBoardRowData(val keyData: List<KeyData>, val rowPosition: Int)
+data class KeyBoardRowData(val keyData: List<KeyData>)
 
 

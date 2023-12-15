@@ -21,9 +21,9 @@ import model.ui.game_pieces.TileKeyStatus
 
 
 @Composable
-fun KeyBoardRow(keyList: List<KeyData>, onKeySelected: (KeyData)->Unit) {
+fun KeyBoardRow(keyMap: List<KeyData>, onKeySelected: (KeyData)->Unit) {
     Row(Modifier.wrapContentSize(),horizontalArrangement = Arrangement.SpaceAround) {
-        keyList.forEach {
+        keyMap.forEach {
             Key(it,onKeySelected)
             Spacer(Modifier.width(3.dp))
         }

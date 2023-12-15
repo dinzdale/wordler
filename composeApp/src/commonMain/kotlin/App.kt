@@ -25,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import gameboard.GameBoard
-import keyboard.PreviewKeyBoard
+import keyboard.KeyBoard
+import model.ui.game_pieces.KeyData
+import model.ui.game_pieces.KeyType
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
@@ -54,6 +56,8 @@ fun ShowGameBoard() {
     var words = remember { mutableStateListOf("ABCDE") }
     var definition by remember { mutableStateOf<String?>(null) }
     var cnt by remember { mutableStateOf(0) }
+    var keyData by remember { mutableStateOf(KeyData('Q',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
+
 
     val scrollState = rememberScrollState()
 
@@ -106,7 +110,9 @@ fun ShowGameBoard() {
             }) {
                 Text("Get more words")
             }
-            PreviewKeyBoard()
+            KeyBoard(keyData) {
+                keyData = it
+            }
         }
     }
 
