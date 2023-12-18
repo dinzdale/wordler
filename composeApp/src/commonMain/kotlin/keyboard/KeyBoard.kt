@@ -20,6 +20,7 @@ import model.ui.game_pieces.TileKeyStatus
 
 @Composable
 fun KeyBoard(
+    modifier: Modifier,
     keyData: KeyData,
     reset: Boolean,
     onResetKeyboardComplete: () -> Unit,
@@ -101,7 +102,7 @@ fun KeyBoard(
     }
 
     Column(
-        Modifier
+        modifier
             .fillMaxWidth()
             .wrapContentHeight(),
         horizontalAlignment = Alignment.CenterHorizontally

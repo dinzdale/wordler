@@ -1,11 +1,10 @@
-import Network.WordlerAPI
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -23,8 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import gameboard.GameBoard
 import keyboard.KeyBoard
 import model.DictionaryItem
@@ -56,99 +53,158 @@ fun ShowLayout() {
 
 @Composable
 fun ShowGameBoard() {
-    var wordList = remember { mutableStateMapOf<String,List<DictionaryItem>>() }
+    var initializeGameBoard by remember { mutableStateOf(true) }
+    var wordMap = remember { mutableStateMapOf<String, List<DictionaryItem>>() }
+    var gameBoardState = remember { mutableStateMapOf<Int, MutableList<TileData>>() }
+
+
     var words = remember { mutableStateListOf("ABCDE") }
     var definition by remember { mutableStateOf<String?>(null) }
     var cnt by remember { mutableStateOf(0) }
-    var keyData by remember { mutableStateOf(KeyData('Q',KeyType.ALPHA,TileKeyStatus.MATCH_IN_POSITION)) }
-     var restKeyboard by remember { mutableStateOf(false) }
+    var keyData by remember {
+        mutableStateOf(
+            KeyData(
+                'Q',
+                KeyType.ALPHA,
+                TileKeyStatus.MATCH_IN_POSITION
+            )
+        )
+    }
+    var restKeyboard by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
 
-
+    LaunchedEffect(initializeGameBoard) {
+        if (initializeGameBoard) {
+            for (row in 0..6) {
+                gameBoardState[row] = mutableListOf(
+                    TileData('X', TileKeyStatus.EMPTY, 0),
+                    TileData('X', TileKeyStatus.EMPTY, 1),
+                    TileData('X', TileKeyStatus.EMPTY, 2),
+                    TileData('X', TileKeyStatus.EMPTY, 3),
+                    TileData('X', TileKeyStatus.EMPTY, 4),
+                )
+            }
+        }
+        initializeGameBoard = false
+    }
 
     LaunchedEffect(cnt) {
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
-            wordList[it.key] = it.value
+            wordMap[it.key] = it.value
         }
-        WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 6)).apply {
-            onSuccess { wordList ->
-                words.clear()
-                words.addAll(wordList.map { it.uppercase() })
-                WordlerAPI.getDictionaryDefinition(wordList[0]).apply {
-                    onSuccess { itemsList ->
-                        definition = itemsList[0].meanings[0].definitions[0].definition
-                    }
-                    onFailure {
-                        definition = null
-                    }
-                }
-            }
-            onFailure {
-                definition = null
-            }
-        }
+//        WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 6)).apply {
+//            onSuccess { wordList ->
+//                words.clear()
+//                words.addAll(wordList.map { it.uppercase() })
+//                WordlerAPI.getDictionaryDefinition(wordList[0]).apply {
+//                    onSuccess { itemsList ->
+//                        definition = itemsList[0].meanings[0].definitions[0].definition
+//                    }
+//                    onFailure {
+//                        definition = null
+//                    }
+//                }
+//            }
+//            onFailure {
+//                definition = null
+//            }
+//        }
     }
+
     Box(
-        modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+        Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (words.isNotEmpty()) {
-                GameBoard(words.map { getMockTileDataList(it,definition) })
-            }
-            Spacer(Modifier.height(5.dp))
-            Text(words.joinToString())
-            Spacer(Modifier.height(5.dp))
-            definition?.also {
-                Text(
-                    it,
-                    modifier = Modifier.padding(horizontal = 50.dp),
-                    textAlign = TextAlign.Start
-                )
-            }
-            Spacer(Modifier.height(20.dp))
-            Button({
-                cnt = ++cnt % 2
-            }) {
-                Text("Get more words")
-            }
-            KeyBoard(keyData,restKeyboard,{
+        if (gameBoardState.isNotEmpty()) {
+            GameBoard(gameBoardState.entries.map {
+                RowData(rowPosition = it.key, tileData = it.value)
+            })
+        }
+        Column(Modifier.align(Alignment.BottomCenter)) {
+            KeyBoard(Modifier, keyData, restKeyboard, {
                 restKeyboard = false
             }) {
-                when(it.keyType) {
+                when (it.keyType) {
                     KeyType.ALPHA -> keyData = keyData.copy(it.char)
                     KeyType.DELETE -> restKeyboard = true
                     KeyType.ENTER -> {}
                 }
             }
+            Row(
+                Modifier.fillMaxWidth().wrapContentHeight(),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button({
+                    cnt = ++cnt % 2
+                }) {
+                    Text("new word")
+                }
+                if (wordMap.isNotEmpty()) {
+                    Text("${wordMap.keys.first()}")
+                }
+            }
         }
     }
+//        Column(
+//            modifier = Modifier.fillMaxSize(),
+//            verticalArrangement = Arrangement.SpaceEvenly,
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            if (words.isNotEmpty()) {
+//                GameBoard(gameBoardState.entries.map {
+//                    RowData(rowPosition = it.key, tileData = it.value)
+//                })
+//            }
+//            Spacer(Modifier.height(5.dp))
+//            Text(words.joinToString())
+//            Spacer(Modifier.height(5.dp))
+//            definition?.also {
+//                Text(
+//                    it,
+//                    modifier = Modifier.padding(horizontal = 50.dp),
+//                    textAlign = TextAlign.Start
+//                )
+//            }
+//            Spacer(Modifier.height(20.dp))
+//            Button({
+//                cnt = ++cnt % 2
+//            }) {
+//                Text("Get more words")
+//            }
+//            KeyBoard(keyData,restKeyboard,{
+//                restKeyboard = false
+//            }) {
+//                when(it.keyType) {
+//                    KeyType.ALPHA -> keyData = keyData.copy(it.char)
+//                    KeyType.DELETE -> restKeyboard = true
+//                    KeyType.ENTER -> {}
+//                }
+//            }
 
-}
+//    }
 
-fun getMockTileDataList(word: String, definition: String?): RowData {
-    val charArray = word.toCharArray()
-    val defaultList = mutableListOf(
-        TileData('X', TileKeyStatus.EMPTY, 0),
-        TileData('X', TileKeyStatus.EMPTY, 1),
-        TileData('X', TileKeyStatus.EMPTY, 2),
-        TileData('X', TileKeyStatus.EMPTY, 3),
-        TileData('X', TileKeyStatus.EMPTY, 4)
-    )
-    return definition?.let {
-        val tempList = charArray.mapIndexed() { index, char ->
-            TileData(charArray[index], TileKeyStatus.values()[Random.nextInt(1, 4)], index)
-        }
-        tempList.forEachIndexed { index, tileData ->
-            defaultList[index] = tileData
-        }
-         RowData(defaultList, 0)
-    }  ?: RowData(defaultList, 0)
 
+    fun getMockTileDataList(word: String, definition: String?): RowData {
+        val charArray = word.toCharArray()
+        val defaultList = mutableListOf(
+            TileData('X', TileKeyStatus.EMPTY, 0),
+            TileData('X', TileKeyStatus.EMPTY, 1),
+            TileData('X', TileKeyStatus.EMPTY, 2),
+            TileData('X', TileKeyStatus.EMPTY, 3),
+            TileData('X', TileKeyStatus.EMPTY, 4)
+        )
+        return definition?.let {
+            val tempList = charArray.mapIndexed() { index, char ->
+                TileData(charArray[index], TileKeyStatus.values()[Random.nextInt(1, 4)], index)
+            }
+            tempList.forEachIndexed { index, tileData ->
+                defaultList[index] = tileData
+            }
+            RowData(defaultList, 0)
+        } ?: RowData(defaultList, 0)
+
+    }
 }
 

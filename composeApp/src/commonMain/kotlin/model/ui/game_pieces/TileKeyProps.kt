@@ -50,4 +50,6 @@ data class RowData(val tileData: List<TileData>, val rowPosition: Int = 0)
 
 data class KeyBoardRowData(val keyData: List<KeyData>)
 
+typealias KeyDataEntry = Pair<Int,KeyData>
+
 
