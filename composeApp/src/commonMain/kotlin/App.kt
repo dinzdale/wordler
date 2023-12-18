@@ -30,7 +30,9 @@ import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
+import model.ui.game_pieces.TileDateEntry
 import model.ui.game_pieces.TileKeyStatus
+import model.ui.game_pieces.WordDictionary
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import kotlin.random.Random
 
@@ -54,12 +56,11 @@ fun ShowLayout() {
 @Composable
 fun ShowGameBoard() {
     var initializeGameBoard by remember { mutableStateOf(true) }
-    var wordMap = remember { mutableStateMapOf<String, List<DictionaryItem>>() }
+    var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
     var gameBoardState = remember { mutableStateMapOf<Int, MutableList<TileData>>() }
+    var currentRow by remember{ mutableStateOf(0) }
+    var currentColumn by remember{ mutableStateOf(0) }
 
-
-    var words = remember { mutableStateListOf("ABCDE") }
-    var definition by remember { mutableStateOf<String?>(null) }
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
         mutableStateOf(
@@ -74,6 +75,23 @@ fun ShowGameBoard() {
 
     val scrollState = rememberScrollState()
 
+    @Composable
+    fun UpdateTile(char:Char) {
+
+//       gameBoardState[currentRow]?.filter{
+//            it.char == char
+//        }?.firstOrNull {
+//            currentColumn < it.columnPosition
+//       }
+//        }?: {
+//            gameBoardState[currentRow]?.set(currentColumn,
+//                TileData(char,TileKeyStatus.NO_MATCH,0)
+//            )
+//        }
+
+
+
+    }
     LaunchedEffect(initializeGameBoard) {
         if (initializeGameBoard) {
             for (row in 0..6) {
@@ -91,25 +109,8 @@ fun ShowGameBoard() {
 
     LaunchedEffect(cnt) {
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
-            wordMap[it.key] = it.value
+            wordDictionary.add(WordDictionary(it.key.toList(),it.value))
         }
-//        WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 6)).apply {
-//            onSuccess { wordList ->
-//                words.clear()
-//                words.addAll(wordList.map { it.uppercase() })
-//                WordlerAPI.getDictionaryDefinition(wordList[0]).apply {
-//                    onSuccess { itemsList ->
-//                        definition = itemsList[0].meanings[0].definitions[0].definition
-//                    }
-//                    onFailure {
-//                        definition = null
-//                    }
-//                }
-//            }
-//            onFailure {
-//                definition = null
-//            }
-//        }
     }
 
     Box(
@@ -141,49 +142,13 @@ fun ShowGameBoard() {
                 }) {
                     Text("new word")
                 }
-                if (wordMap.isNotEmpty()) {
-                    Text("${wordMap.keys.first()}")
+                if (wordDictionary.isNotEmpty()) {
+                    Text("${wordDictionary[0].toString()}")
                 }
             }
         }
     }
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//            verticalArrangement = Arrangement.SpaceEvenly,
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            if (words.isNotEmpty()) {
-//                GameBoard(gameBoardState.entries.map {
-//                    RowData(rowPosition = it.key, tileData = it.value)
-//                })
-//            }
-//            Spacer(Modifier.height(5.dp))
-//            Text(words.joinToString())
-//            Spacer(Modifier.height(5.dp))
-//            definition?.also {
-//                Text(
-//                    it,
-//                    modifier = Modifier.padding(horizontal = 50.dp),
-//                    textAlign = TextAlign.Start
-//                )
-//            }
-//            Spacer(Modifier.height(20.dp))
-//            Button({
-//                cnt = ++cnt % 2
-//            }) {
-//                Text("Get more words")
-//            }
-//            KeyBoard(keyData,restKeyboard,{
-//                restKeyboard = false
-//            }) {
-//                when(it.keyType) {
-//                    KeyType.ALPHA -> keyData = keyData.copy(it.char)
-//                    KeyType.DELETE -> restKeyboard = true
-//                    KeyType.ENTER -> {}
-//                }
-//            }
 
-//    }
 
 
     fun getMockTileDataList(word: String, definition: String?): RowData {

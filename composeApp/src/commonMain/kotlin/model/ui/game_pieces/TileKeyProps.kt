@@ -1,6 +1,7 @@
 package model.ui.game_pieces
 
 import androidx.compose.ui.graphics.Color
+import model.DictionaryItem
 
 enum class TileKeyStatus {
     INITIAL_KEY, NO_MATCH, MATCH_IN_POSITION, MATCH_OUT_POSITION, EMPTY,
@@ -48,8 +49,4 @@ data class KeyData(val char: Char? = null, val keyType: KeyType = KeyType.ALPHA,
 data class RowData(val tileData: List<TileData>, val rowPosition: Int = 0)
 
 
-data class KeyBoardRowData(val keyData: List<KeyData>)
-
-typealias KeyDataEntry = Pair<Int,KeyData>
-
-
+data class WordDictionary(val wordList:List<Char>, val dictionaryItemList: List<DictionaryItem>)
