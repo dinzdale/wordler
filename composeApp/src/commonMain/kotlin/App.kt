@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,6 +27,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import gameboard.GameBoard
 import keyboard.KeyBoard
+import model.DictionaryItem
+import model.repos.WordlerRepo
 import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
 import model.ui.game_pieces.RowData
@@ -53,6 +56,7 @@ fun ShowLayout() {
 
 @Composable
 fun ShowGameBoard() {
+    var wordList = remember { mutableStateMapOf<String,List<DictionaryItem>>() }
     var words = remember { mutableStateListOf("ABCDE") }
     var definition by remember { mutableStateOf<String?>(null) }
     var cnt by remember { mutableStateOf(0) }
@@ -64,6 +68,9 @@ fun ShowGameBoard() {
 
 
     LaunchedEffect(cnt) {
+        WordlerRepo.getWordsAndDefinitions().entries.forEach {
+            wordList[it.key] = it.value
+        }
         WordlerAPI.getWords(noWords = 6, length = Random.nextInt(3, 6)).apply {
             onSuccess { wordList ->
                 words.clear()
