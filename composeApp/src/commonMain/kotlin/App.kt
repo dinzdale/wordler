@@ -90,8 +90,14 @@ fun ShowGameBoard() {
                             TileData(it, TileKeyStatus.MATCH_OUT_POSITION, column)
                     }
                     if (result == null) {
-                        gameBoardState[currentRow][column] =
-                            TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                        if (guess[column] == '?') {
+                            gameBoardState[currentRow][column] =
+                                TileData(guess[column], TileKeyStatus.EMPTY, column)
+                        }
+                        else {
+                            gameBoardState[currentRow][column] =
+                                TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                        }
                     }
                 }
             }
