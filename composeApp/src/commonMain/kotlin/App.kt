@@ -56,7 +56,8 @@ fun ShowGameBoard() {
     var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
     var gameBoardState = remember { mutableListOf<MutableList<TileData>>() }
 
-    var currentRow by remember { mutableStateOf(0) }
+    var wordSelectionRow = 0
+    var currentRow: Int = 0
     var currentColumn: Int = 0
 
     val currentGuess = remember {
@@ -89,11 +90,11 @@ fun ShowGameBoard() {
     fun UpdateTiles(guess: List<Char> = currentGuess[currentRow]) {
         if (initializeGameBoard.not() && wordDictionary.isNotEmpty()) {
             for (column in 0..guess.lastIndex) {
-                if (wordDictionary[currentRow].wordList[column] == guess[column]) {
+                if (wordDictionary[wordSelectionRow].wordList[column] == guess[column]) {
                     gameBoardState[currentRow][column] =
                         TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
                 } else {
-                    var fullList = wordDictionary[currentRow].wordList
+                    var fullList = wordDictionary[wordSelectionRow].wordList
                     val result = fullList.subList(column, fullList.size).firstOrNull {
                         it == guess[column]
                     }?.also {
@@ -133,7 +134,7 @@ fun ShowGameBoard() {
     }
 
     @Composable
-    fun SetCurrentColumn(guess: List<Char> = currentGuess[currentColumn]) {
+    fun SetCurrentColumn(guess: List<Char> = currentGuess[currentRow]) {
         guess.indexOf('?').let {
             if (it > -1) {
                 currentColumn = it
@@ -174,9 +175,9 @@ fun ShowGameBoard() {
 
                     KeyType.DELETE -> {
                         var prevIndex = currentColumn - 1
-                         if (prevIndex < 0 ) {
-                             prevIndex = 0
-                         }
+                        if (prevIndex < 0) {
+                            prevIndex = 0
+                        }
                         currentGuess[currentRow][prevIndex] = '?'
                     }
 
@@ -188,7 +189,11 @@ fun ShowGameBoard() {
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button({}, enabled = produceState(false, currentGuess) { currentGuess[currentRow].contains('?').not() }.value) {
+                Button({},
+                    enabled = produceState(false, currentGuess[currentRow]) {
+                        currentGuess[currentRow].contains('?').not()
+                    }.value
+                ) {
                     Text("Guess")
                 }
                 Button({
