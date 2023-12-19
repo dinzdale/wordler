@@ -57,6 +57,7 @@ fun ShowGameBoard() {
     var initializeGameBoard by remember { mutableStateOf(true) }
     var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
     var gameBoardState = remember { mutableStateListOf<MutableList<TileData>>() }
+
     var currentRow by remember{ mutableStateOf(0) }
     var currentColumn by remember{ mutableStateOf(0) }
 
@@ -74,23 +75,21 @@ fun ShowGameBoard() {
 
     val scrollState = rememberScrollState()
 
-    @Composable
+
     fun UpdateTile(char: Char) {
         if (wordDictionary[currentRow].wordList[currentColumn] == char) {
-            gameBoardState[currentRow].set(currentColumn, TileData(char, TileKeyStatus.MATCH_IN_POSITION, currentColumn))
+            gameBoardState[currentRow][currentColumn] =
+                TileData(char, TileKeyStatus.MATCH_IN_POSITION, currentColumn)
         } else {
-            var fullList = gameBoardState[currentRow]
+            var fullList = wordDictionary[currentRow].wordList
             fullList.subList(currentColumn, fullList.lastIndex).firstOrNull {
-                char == it.char
+                char == char
             }?.also {
-                gameBoardState[currentRow].set(
-                    currentColumn,
-                    TileData(char, TileKeyStatus.MATCH_OUT_POSITION, currentColumn)
-                )
-            } ?: gameBoardState[currentRow].set(
-                currentColumn,
-                TileData(char, TileKeyStatus.NO_MATCH, currentColumn)
-            )
+                gameBoardState[currentRow][currentColumn] = TileData(char, TileKeyStatus.MATCH_OUT_POSITION, currentColumn)
+
+            } ?: {
+                gameBoardState[currentRow][currentColumn] = TileData(char, TileKeyStatus.NO_MATCH, currentColumn)
+            }
         }
     }
 
@@ -98,12 +97,14 @@ fun ShowGameBoard() {
     LaunchedEffect(initializeGameBoard) {
         if (initializeGameBoard) {
             for (row in 0..5) {
-                gameBoardState[row] = mutableListOf(
-                    TileData('X', TileKeyStatus.EMPTY, 0),
-                    TileData('X', TileKeyStatus.EMPTY, 1),
-                    TileData('X', TileKeyStatus.EMPTY, 2),
-                    TileData('X', TileKeyStatus.EMPTY, 3),
-                    TileData('X', TileKeyStatus.EMPTY, 4),
+                gameBoardState.add(
+                    mutableListOf(
+                        TileData('X', TileKeyStatus.EMPTY, 0),
+                        TileData('X', TileKeyStatus.EMPTY, 1),
+                        TileData('X', TileKeyStatus.EMPTY, 2),
+                        TileData('X', TileKeyStatus.EMPTY, 3),
+                        TileData('X', TileKeyStatus.EMPTY, 4),
+                    )
                 )
             }
         }
@@ -112,7 +113,7 @@ fun ShowGameBoard() {
 
     LaunchedEffect(cnt) {
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
-            wordDictionary.add(WordDictionary(it.key.toList(),it.value))
+            wordDictionary.add(WordDictionary(it.key.map{it.uppercaseChar()}.toList(),it.value))
         }
     }
 
@@ -128,9 +129,9 @@ fun ShowGameBoard() {
         Column(Modifier.align(Alignment.BottomCenter)) {
             KeyBoard(Modifier, keyData, restKeyboard, {
                 restKeyboard = false
-            }) {
-                when (it.keyType) {
-                    KeyType.ALPHA -> keyData = keyData.copy(it.char)
+            }) { keyData->
+                when (keyData.keyType) {
+                    KeyType.ALPHA -> keyData.char?.apply {  UpdateTile(keyData.char) }//keyData = keyData.copy(it.char)
                     KeyType.DELETE -> restKeyboard = true
                     KeyType.ENTER -> {}
                 }
@@ -175,4 +176,5 @@ fun ShowGameBoard() {
 
     }
 }
+
 
