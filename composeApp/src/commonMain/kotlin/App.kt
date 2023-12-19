@@ -98,7 +98,7 @@ fun ShowGameBoard() {
         if (initializeGameBoard) {
             for (row in 0..5) {
                 gameBoardState.add(
-                    mutableListOf(
+                    mutableStateListOf(
                         TileData('X', TileKeyStatus.EMPTY, 0),
                         TileData('X', TileKeyStatus.EMPTY, 1),
                         TileData('X', TileKeyStatus.EMPTY, 2),
