@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import gameboard.GameBoard
 import keyboard.KeyBoard
-import model.DictionaryItem
 import model.repos.WordlerRepo
 import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
@@ -58,8 +56,8 @@ fun ShowGameBoard() {
     var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
     var gameBoardState = remember { mutableStateListOf<MutableList<TileData>>() }
 
-    var currentRow by remember{ mutableStateOf(0) }
-    var currentColumn by remember{ mutableStateOf(0) }
+    var currentRow by remember { mutableStateOf(0) }
+    var currentColumn by remember { mutableStateOf(0) }
 
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
@@ -82,13 +80,15 @@ fun ShowGameBoard() {
                 TileData(char, TileKeyStatus.MATCH_IN_POSITION, currentColumn)
         } else {
             var fullList = wordDictionary[currentRow].wordList
-            fullList.subList(currentColumn, fullList.lastIndex).firstOrNull {
-                char == char
+            val result = fullList.subList(currentColumn, fullList.size).firstOrNull {
+                it == char
             }?.also {
-                gameBoardState[currentRow][currentColumn] = TileData(char, TileKeyStatus.MATCH_OUT_POSITION, currentColumn)
-
-            } ?: {
-                gameBoardState[currentRow][currentColumn] = TileData(char, TileKeyStatus.NO_MATCH, currentColumn)
+                gameBoardState[currentRow][currentColumn] =
+                    TileData(it, TileKeyStatus.MATCH_OUT_POSITION, currentColumn)
+            }
+            if (result == null) {
+                gameBoardState[currentRow][currentColumn] =
+                    TileData(char, TileKeyStatus.NO_MATCH, currentColumn)
             }
         }
     }
@@ -113,7 +113,7 @@ fun ShowGameBoard() {
 
     LaunchedEffect(cnt) {
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
-            wordDictionary.add(WordDictionary(it.key.map{it.uppercaseChar()}.toList(),it.value))
+            wordDictionary.add(WordDictionary(it.key.map { it.uppercaseChar() }.toList(), it.value))
         }
     }
 
@@ -122,16 +122,16 @@ fun ShowGameBoard() {
         contentAlignment = Alignment.TopCenter
     ) {
         if (gameBoardState.isNotEmpty()) {
-            GameBoard(gameBoardState.mapIndexed() {index,titleDataList->
+            GameBoard(gameBoardState.mapIndexed() { index, titleDataList ->
                 RowData(rowPosition = index, tileData = titleDataList)
             })
         }
         Column(Modifier.align(Alignment.BottomCenter)) {
             KeyBoard(Modifier, keyData, restKeyboard, {
                 restKeyboard = false
-            }) { keyData->
+            }) { keyData ->
                 when (keyData.keyType) {
-                    KeyType.ALPHA -> keyData.char?.apply {  UpdateTile(keyData.char) }//keyData = keyData.copy(it.char)
+                    KeyType.ALPHA -> keyData.char?.apply { UpdateTile(keyData.char) }//keyData = keyData.copy(it.char)
                     KeyType.DELETE -> restKeyboard = true
                     KeyType.ENTER -> {}
                 }
