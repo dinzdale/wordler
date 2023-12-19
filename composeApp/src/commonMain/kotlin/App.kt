@@ -30,7 +30,6 @@ import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
-import model.ui.game_pieces.TileDateEntry
 import model.ui.game_pieces.TileKeyStatus
 import model.ui.game_pieces.WordDictionary
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -57,7 +56,7 @@ fun ShowLayout() {
 fun ShowGameBoard() {
     var initializeGameBoard by remember { mutableStateOf(true) }
     var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
-    var gameBoardState = remember { mutableStateMapOf<Int, MutableList<TileData>>() }
+    var gameBoardState = remember { mutableStateListOf<MutableList<TileData>>() }
     var currentRow by remember{ mutableStateOf(0) }
     var currentColumn by remember{ mutableStateOf(0) }
 
@@ -76,25 +75,29 @@ fun ShowGameBoard() {
     val scrollState = rememberScrollState()
 
     @Composable
-    fun UpdateTile(char:Char) {
-
-//       gameBoardState[currentRow]?.filter{
-//            it.char == char
-//        }?.firstOrNull {
-//            currentColumn < it.columnPosition
-//       }
-//        }?: {
-//            gameBoardState[currentRow]?.set(currentColumn,
-//                TileData(char,TileKeyStatus.NO_MATCH,0)
-//            )
-//        }
-
-
-
+    fun UpdateTile(char: Char) {
+        if (wordDictionary[currentRow].wordList[currentColumn] == char) {
+            gameBoardState[currentRow].set(currentColumn, TileData(char, TileKeyStatus.MATCH_IN_POSITION, currentColumn))
+        } else {
+            var fullList = gameBoardState[currentRow]
+            fullList.subList(currentColumn, fullList.lastIndex).firstOrNull {
+                char == it.char
+            }?.also {
+                gameBoardState[currentRow].set(
+                    currentColumn,
+                    TileData(char, TileKeyStatus.MATCH_OUT_POSITION, currentColumn)
+                )
+            } ?: gameBoardState[currentRow].set(
+                currentColumn,
+                TileData(char, TileKeyStatus.NO_MATCH, currentColumn)
+            )
+        }
     }
+
+
     LaunchedEffect(initializeGameBoard) {
         if (initializeGameBoard) {
-            for (row in 0..6) {
+            for (row in 0..5) {
                 gameBoardState[row] = mutableListOf(
                     TileData('X', TileKeyStatus.EMPTY, 0),
                     TileData('X', TileKeyStatus.EMPTY, 1),
@@ -118,8 +121,8 @@ fun ShowGameBoard() {
         contentAlignment = Alignment.TopCenter
     ) {
         if (gameBoardState.isNotEmpty()) {
-            GameBoard(gameBoardState.entries.map {
-                RowData(rowPosition = it.key, tileData = it.value)
+            GameBoard(gameBoardState.mapIndexed() {index,titleDataList->
+                RowData(rowPosition = index, tileData = titleDataList)
             })
         }
         Column(Modifier.align(Alignment.BottomCenter)) {
@@ -143,7 +146,7 @@ fun ShowGameBoard() {
                     Text("new word")
                 }
                 if (wordDictionary.isNotEmpty()) {
-                    Text("${wordDictionary[0].toString()}")
+                    Text("${wordDictionary[0].wordList.toString()}")
                 }
             }
         }

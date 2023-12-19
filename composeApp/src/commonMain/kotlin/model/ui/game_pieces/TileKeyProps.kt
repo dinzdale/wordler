@@ -49,4 +49,4 @@ data class KeyData(val char: Char? = null, val keyType: KeyType = KeyType.ALPHA,
 data class RowData(val tileData: List<TileData>, val rowPosition: Int = 0)
 
 
-data class WordDictionary(val wordList:List<Char>, val dictionaryItemList: List<DictionaryItem>)
+data class WordDictionary(val wordList:List<Char> = emptyList(), val dictionaryItemList: List<DictionaryItem> = emptyList())
