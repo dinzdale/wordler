@@ -31,7 +31,6 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 import model.ui.game_pieces.WordDictionary
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import kotlin.random.Random
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -58,6 +57,7 @@ fun ShowGameBoard() {
 
     var currentRow by remember { mutableStateOf(0) }
     var currentColumn by remember { mutableStateOf(0) }
+    val currentGuess = remember { mutableStateListOf('?', '?', '?', '?', '?') }
 
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
@@ -74,21 +74,26 @@ fun ShowGameBoard() {
     val scrollState = rememberScrollState()
 
 
-    fun UpdateTile(char: Char) {
-        if (wordDictionary[currentRow].wordList[currentColumn] == char) {
-            gameBoardState[currentRow][currentColumn] =
-                TileData(char, TileKeyStatus.MATCH_IN_POSITION, currentColumn)
-        } else {
-            var fullList = wordDictionary[currentRow].wordList
-            val result = fullList.subList(currentColumn, fullList.size).firstOrNull {
-                it == char
-            }?.also {
-                gameBoardState[currentRow][currentColumn] =
-                    TileData(it, TileKeyStatus.MATCH_OUT_POSITION, currentColumn)
-            }
-            if (result == null) {
-                gameBoardState[currentRow][currentColumn] =
-                    TileData(char, TileKeyStatus.NO_MATCH, currentColumn)
+    @Composable
+    fun UpdateTiles(guess: List<Char> = currentGuess) {
+        if (initializeGameBoard.not() && wordDictionary.isNotEmpty()) {
+            for (column in 0..guess.lastIndex) {
+                if (wordDictionary[currentRow].wordList[column] == guess[column]) {
+                    gameBoardState[currentRow][column] =
+                        TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
+                } else {
+                    var fullList = wordDictionary[currentRow].wordList
+                    val result = fullList.subList(column, fullList.size).firstOrNull {
+                        it == guess[column]
+                    }?.also {
+                        gameBoardState[currentRow][column] =
+                            TileData(it, TileKeyStatus.MATCH_OUT_POSITION, column)
+                    }
+                    if (result == null) {
+                        gameBoardState[currentRow][column] =
+                            TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                    }
+                }
             }
         }
     }
@@ -117,6 +122,7 @@ fun ShowGameBoard() {
         }
     }
 
+    UpdateTiles()
     Box(
         Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter
@@ -131,8 +137,18 @@ fun ShowGameBoard() {
                 restKeyboard = false
             }) { keyData ->
                 when (keyData.keyType) {
-                    KeyType.ALPHA -> keyData.char?.apply { UpdateTile(keyData.char) }//keyData = keyData.copy(it.char)
-                    KeyType.DELETE -> restKeyboard = true
+                    KeyType.ALPHA -> keyData.char?.also {
+                        currentGuess[currentColumn] = it
+                        if (++currentColumn > 4) {
+                            currentColumn = 4
+                        }
+                    }//keyData = keyData.copy(it.char)
+                    KeyType.DELETE -> {
+                        currentGuess[currentColumn] = '?'
+                        if (--currentColumn < 0) {
+                            currentColumn = 0
+                        }
+                    }
                     KeyType.ENTER -> {}
                 }
             }
@@ -141,6 +157,9 @@ fun ShowGameBoard() {
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Button({}) {
+                    Text("Guess")
+                }
                 Button({
                     cnt = ++cnt % 2
                 }) {
@@ -153,28 +172,6 @@ fun ShowGameBoard() {
         }
     }
 
-
-
-    fun getMockTileDataList(word: String, definition: String?): RowData {
-        val charArray = word.toCharArray()
-        val defaultList = mutableListOf(
-            TileData('X', TileKeyStatus.EMPTY, 0),
-            TileData('X', TileKeyStatus.EMPTY, 1),
-            TileData('X', TileKeyStatus.EMPTY, 2),
-            TileData('X', TileKeyStatus.EMPTY, 3),
-            TileData('X', TileKeyStatus.EMPTY, 4)
-        )
-        return definition?.let {
-            val tempList = charArray.mapIndexed() { index, char ->
-                TileData(charArray[index], TileKeyStatus.values()[Random.nextInt(1, 4)], index)
-            }
-            tempList.forEachIndexed { index, tileData ->
-                defaultList[index] = tileData
-            }
-            RowData(defaultList, 0)
-        } ?: RowData(defaultList, 0)
-
-    }
 }
 
 
