@@ -56,7 +56,8 @@ fun ShowGameBoard() {
     var gameBoardState = remember { mutableStateListOf<MutableList<TileData>>() }
 
     var currentRow by remember { mutableStateOf(0) }
-    var currentColumn by remember { mutableStateOf(0) }
+    var currentColumn: Int = 0
+
     val currentGuess = remember { mutableStateListOf('?', '?', '?', '?', '?') }
 
     var cnt by remember { mutableStateOf(0) }
@@ -93,8 +94,7 @@ fun ShowGameBoard() {
                         if (guess[column] == '?') {
                             gameBoardState[currentRow][column] =
                                 TileData(guess[column], TileKeyStatus.EMPTY, column)
-                        }
-                        else {
+                        } else {
                             gameBoardState[currentRow][column] =
                                 TileData(guess[column], TileKeyStatus.NO_MATCH, column)
                         }
@@ -122,12 +122,25 @@ fun ShowGameBoard() {
         initializeGameBoard = false
     }
 
+    @Composable
+    fun SetCurrentColumn(guess: List<Char> = currentGuess) {
+        currentGuess.indexOf('?').let {
+            if (it > -1) {
+                currentColumn = it
+            } else {
+                currentColumn = 5
+            }
+        }
+    }
+
+
     LaunchedEffect(cnt) {
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
             wordDictionary.add(WordDictionary(it.key.map { it.uppercaseChar() }.toList(), it.value))
         }
     }
 
+    SetCurrentColumn()
     UpdateTiles()
     Box(
         Modifier.fillMaxSize().verticalScroll(scrollState),
@@ -144,17 +157,19 @@ fun ShowGameBoard() {
             }) { keyData ->
                 when (keyData.keyType) {
                     KeyType.ALPHA -> keyData.char?.also {
-                        currentGuess[currentColumn] = it
-                        if (++currentColumn > 4) {
-                            currentColumn = 4
-                        }
-                    }//keyData = keyData.copy(it.char)
-                    KeyType.DELETE -> {
-                        currentGuess[currentColumn] = '?'
-                        if (--currentColumn < 0) {
-                            currentColumn = 0
+                        if (IntRange(0, 4).contains(currentColumn)) {
+                            currentGuess[currentColumn] = it
                         }
                     }
+
+                    KeyType.DELETE -> {
+                        var prevIndex = currentColumn - 1
+                         if (prevIndex < 0 ) {
+                             prevIndex = 0
+                         }
+                        currentGuess[prevIndex] = '?'
+                    }
+
                     KeyType.ENTER -> {}
                 }
             }
