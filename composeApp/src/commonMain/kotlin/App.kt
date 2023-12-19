@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,12 +54,21 @@ fun ShowLayout() {
 fun ShowGameBoard() {
     var initializeGameBoard by remember { mutableStateOf(true) }
     var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
-    var gameBoardState = remember { mutableStateListOf<MutableList<TileData>>() }
+    var gameBoardState = remember { mutableListOf<MutableList<TileData>>() }
 
     var currentRow by remember { mutableStateOf(0) }
     var currentColumn: Int = 0
 
-    val currentGuess = remember { mutableStateListOf('?', '?', '?', '?', '?') }
+    val currentGuess = remember {
+        listOf(
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+        )
+    }
 
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
@@ -76,7 +86,7 @@ fun ShowGameBoard() {
 
 
     @Composable
-    fun UpdateTiles(guess: List<Char> = currentGuess) {
+    fun UpdateTiles(guess: List<Char> = currentGuess[currentRow]) {
         if (initializeGameBoard.not() && wordDictionary.isNotEmpty()) {
             for (column in 0..guess.lastIndex) {
                 if (wordDictionary[currentRow].wordList[column] == guess[column]) {
@@ -123,8 +133,8 @@ fun ShowGameBoard() {
     }
 
     @Composable
-    fun SetCurrentColumn(guess: List<Char> = currentGuess) {
-        currentGuess.indexOf('?').let {
+    fun SetCurrentColumn(guess: List<Char> = currentGuess[currentColumn]) {
+        guess.indexOf('?').let {
             if (it > -1) {
                 currentColumn = it
             } else {
@@ -158,7 +168,7 @@ fun ShowGameBoard() {
                 when (keyData.keyType) {
                     KeyType.ALPHA -> keyData.char?.also {
                         if (IntRange(0, 4).contains(currentColumn)) {
-                            currentGuess[currentColumn] = it
+                            currentGuess[currentRow][currentColumn] = it
                         }
                     }
 
@@ -167,7 +177,7 @@ fun ShowGameBoard() {
                          if (prevIndex < 0 ) {
                              prevIndex = 0
                          }
-                        currentGuess[prevIndex] = '?'
+                        currentGuess[currentRow][prevIndex] = '?'
                     }
 
                     KeyType.ENTER -> {}
@@ -178,7 +188,7 @@ fun ShowGameBoard() {
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button({}) {
+                Button({}, enabled = produceState(false, currentGuess) { currentGuess[currentRow].contains('?').not() }.value) {
                     Text("Guess")
                 }
                 Button({
@@ -194,5 +204,7 @@ fun ShowGameBoard() {
     }
 
 }
+
+
 
 
