@@ -14,7 +14,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +25,7 @@ import androidx.compose.ui.Modifier
 import gameboard.GameBoard
 import keyboard.KeyBoard
 import model.repos.WordlerRepo
+import model.ui.game_pieces.GuessHit
 import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
 import model.ui.game_pieces.RowData
@@ -95,49 +95,59 @@ fun ShowGameBoard() {
     }
 
     @Composable
-    fun UpdateTiles(guess: List<Char> = currentGuess[currentRow], renderAsGuess : Boolean = renerAsGuess, onRenderCompleted : (Boolean)->Unit) {
-            if (renderAsGuess) {
-                for (column in 0..guess.lastIndex) {
-                    if (wordDictionary[wordSelectionRow].wordList[column] == guess[column]) {
-                        gameBoardState[currentRow][column] =
-                            TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
-                    } else {
-                        var fullList = wordDictionary[wordSelectionRow].wordList
-                        val result = fullList.subList(column, fullList.size).firstOrNull {
-                            it == guess[column]
-                        }?.also {
-                            gameBoardState[currentRow][column] =
-                                TileData(it, TileKeyStatus.MATCH_OUT_POSITION, column)
-                        }
-                        if (result == null) {
-                            if (guess[column] == '?') {
-                                gameBoardState[currentRow][column] =
-                                    TileData(guess[column], TileKeyStatus.EMPTY, column)
-                            } else {
-                                gameBoardState[currentRow][column] =
-                                    TileData(guess[column], TileKeyStatus.NO_MATCH, column)
-                            }
-                        }
-                    }
+    fun UpdateTiles(
+        guess: List<Char> = currentGuess[currentRow],
+        renderAsGuess: Boolean = renerAsGuess,
+        onRenderCompleted: (Boolean) -> Unit
+    ) {
+        if (renderAsGuess) {
+            val guessHits = mutableListOf<GuessHit>().apply {
+                for (i in 0..wordDictionary[currentRow].wordList.lastIndex) {
+                    add(i, GuessHit(wordDictionary[currentRow].wordList[i], false))
                 }
-            } else {
-                for (column in 0..guess.lastIndex) {
-                    if (guess[column] == '?') {
+            }
+            for (column in 0..guess.lastIndex) {
+                if (guessHits[column].char == guess[column] && guessHits[column].found.not()) {
+                    guessHits[column].found = true
+                    gameBoardState[wordSelectionRow][column] =
+                        TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
+                } else {
+                    guessHits.find {
+                        it.found.not() && it.char == guess[column]
+                    }?.also {
+                        it.found = true
                         gameBoardState[currentRow][column] =
-                            TileData(guess[column], TileKeyStatus.EMPTY, column)
-                    }
-                    else {
-                        gameBoardState[currentRow][column] =
-                            TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                            TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION, column)
+                    } ?: {
+                        if (guess[column] == '?') {
+                            gameBoardState[currentRow][column] =
+                                TileData(guess[column], TileKeyStatus.EMPTY, column)
+                        } else {
+                            gameBoardState[currentRow][column] =
+                                TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+
+                        }
                     }
                 }
             }
-            onRenderCompleted(renderAsGuess)
+        } else {
+            for (column in 0..guess.lastIndex) {
+                if (guess[column] == '?') {
+                    gameBoardState[currentRow][column] =
+                        TileData(guess[column], TileKeyStatus.EMPTY, column)
+                } else {
+                    gameBoardState[currentRow][column] =
+                        TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                }
+            }
+        }
+        onRenderCompleted(renderAsGuess)
     }
 
 
     LaunchedEffect(initializeGameBoard) {
         if (initializeGameBoard) {
+            gameBoardState.clear()
             for (row in 0..5) {
                 gameBoardState.add(
                     mutableStateListOf(
@@ -166,8 +176,14 @@ fun ShowGameBoard() {
 
 
     LaunchedEffect(cnt) {
+        wordDictionary.clear()
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
-            wordDictionary.add(WordDictionary(it.key.map { it.uppercaseChar() }.toList(), it.value))
+            wordDictionary.add(
+                WordDictionary(
+                    it.key.map { it.uppercaseChar() }.toList(),
+                    it.value
+                )
+            )
         }
     }
 
@@ -213,18 +229,22 @@ fun ShowGameBoard() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                        { renerAsGuess = renerAsGuess.not()},
+                        { renerAsGuess = renerAsGuess.not() },
                         enabled = allowGuess(currentGuess[currentRow][4]).value
                     ) {
                         Text("Guess")
                     }
                     Button({
-                        cnt = ++cnt % 2
+                        initializeGameBoard = true
+                        wordSelectionRow = ++wordSelectionRow % 2
+                        if (wordSelectionRow == 0) {
+                            cnt = ++cnt % 2
+                        }
                     }) {
                         Text("new word")
                     }
-                    if (wordDictionary.isNotEmpty()) {
-                        Text("${wordDictionary[0].wordList.toString()}")
+                    if (gameInitialized().value) {
+                        Text("${wordDictionary[wordSelectionRow].wordList.toString()}")
                     }
                 }
             }
@@ -233,7 +253,7 @@ fun ShowGameBoard() {
 }
 
 @Composable
-fun allowGuess(lastGuess:Char) = produceState(false, lastGuess) {
+fun allowGuess(lastGuess: Char) = produceState(false, lastGuess) {
     value = lastGuess != '?'
 }
 

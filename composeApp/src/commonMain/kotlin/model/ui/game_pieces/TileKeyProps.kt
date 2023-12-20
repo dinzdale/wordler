@@ -50,3 +50,5 @@ data class RowData(val tileData: List<TileData>, val rowPosition: Int = 0)
 
 
 data class WordDictionary(val wordList:List<Char> = emptyList(), val dictionaryItemList: List<DictionaryItem> = emptyList())
+
+data class GuessHit(var char:Char, var found:Boolean)
