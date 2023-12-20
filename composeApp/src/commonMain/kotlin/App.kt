@@ -59,20 +59,13 @@ fun ShowGameBoard() {
 
     var renerAsGuess by remember { mutableStateOf(false) }
 
-    var wordSelectionRow = 0
-    var currentRow: Int = 0
-    var currentColumn: Int = 0
+    var wordSelectionRow by remember { mutableStateOf(0) }
+    var currentRow by remember { mutableStateOf(0) }
+    var currentColumn by remember { mutableStateOf(0) }
 
-    val currentGuess = remember {
-        mutableStateListOf(
-            mutableStateListOf('?', '?', '?', '?', '?'),
-            mutableStateListOf('?', '?', '?', '?', '?'),
-            mutableStateListOf('?', '?', '?', '?', '?'),
-            mutableStateListOf('?', '?', '?', '?', '?'),
-            mutableStateListOf('?', '?', '?', '?', '?'),
-            mutableStateListOf('?', '?', '?', '?', '?'),
-        )
-    }
+    //var currentGuess = remember { mutableStateListOf(mutableStateListOf<Char>()) }
+    var currentGuess = remember { initCurrentGuess() }
+    var initCurrentGuess by remember { mutableStateOf(false) }
 
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
@@ -89,10 +82,6 @@ fun ShowGameBoard() {
     val scrollState = rememberScrollState()
 
 
-    @Composable
-    fun gameInitialized() = produceState(false, initializeGameBoard, wordDictionary.isEmpty()) {
-        value = initializeGameBoard.not() && wordDictionary.isNotEmpty()
-    }
 
     @Composable
     fun UpdateTiles(
@@ -102,8 +91,8 @@ fun ShowGameBoard() {
     ) {
         if (renderAsGuess) {
             val guessHits = mutableListOf<GuessHit>().apply {
-                for (i in 0..wordDictionary[currentRow].wordList.lastIndex) {
-                    add(i, GuessHit(wordDictionary[currentRow].wordList[i], false))
+                for (i in 0..wordDictionary[wordSelectionRow].wordList.lastIndex) {
+                    add(i, GuessHit(wordDictionary[wordSelectionRow].wordList[i], false))
                 }
             }
             for (column in 0..guess.lastIndex) {
@@ -147,7 +136,6 @@ fun ShowGameBoard() {
 
     LaunchedEffect(initializeGameBoard) {
         if (initializeGameBoard) {
-            gameBoardState.clear()
             for (row in 0..5) {
                 gameBoardState.add(
                     mutableStateListOf(
@@ -159,17 +147,21 @@ fun ShowGameBoard() {
                     )
                 )
             }
+            initializeGameBoard = false
         }
-        initializeGameBoard = false
     }
 
+
+
     @Composable
-    fun SetCurrentColumn(guess: List<Char> = currentGuess[currentRow]) {
-        guess.indexOf('?').let {
-            if (it > -1) {
-                currentColumn = it
-            } else {
-                currentColumn = 5
+    fun SetCurrentColumn(guess: List<Char>) {
+        if (guess.isNotEmpty()) {
+            guess.indexOf('?').let {
+                if (it > -1) {
+                    currentColumn = it
+                } else {
+                    currentColumn = 5
+                }
             }
         }
     }
@@ -186,9 +178,16 @@ fun ShowGameBoard() {
             )
         }
     }
+    LaunchedEffect(initCurrentGuess) {
+        if (initCurrentGuess) {
+            currentGuess.clear()
+            currentGuess = initCurrentGuess()
+            initCurrentGuess = false
+        }
+    }
 
-    if (gameInitialized().value) {
-        SetCurrentColumn()
+    if (gameInitialized(initializeGameBoard, wordDictionary.isNotEmpty(), initCurrentGuess.not()).value) {
+        SetCurrentColumn(currentGuess[currentRow])
         UpdateTiles() {
 
         }
@@ -230,20 +229,25 @@ fun ShowGameBoard() {
                 ) {
                     Button(
                         { renerAsGuess = renerAsGuess.not() },
-                        enabled = allowGuess(currentGuess[currentRow][4]).value
+                        enabled = if (initializeGameBoard) {
+                            allowGuess(currentGuess[currentRow][4]).value
+                        } else {
+                            false
+                        }
                     ) {
                         Text("Guess")
                     }
                     Button({
-                        initializeGameBoard = true
-                        wordSelectionRow = ++wordSelectionRow % 2
+                        wordSelectionRow = ++wordSelectionRow % 3
                         if (wordSelectionRow == 0) {
                             cnt = ++cnt % 2
                         }
+                        initCurrentGuess = true
+                        initializeGameBoard = true
                     }) {
                         Text("new word")
                     }
-                    if (gameInitialized().value) {
+                    if (gameInitialized(initializeGameBoard, wordDictionary.isNotEmpty(), initCurrentGuess.not()).value) {
                         Text("${wordDictionary[wordSelectionRow].wordList.toString()}")
                     }
                 }
@@ -257,3 +261,16 @@ fun allowGuess(lastGuess: Char) = produceState(false, lastGuess) {
     value = lastGuess != '?'
 }
 
+fun initCurrentGuess() = mutableStateListOf(
+    mutableStateListOf('?', '?', '?', '?', '?'),
+    mutableStateListOf('?', '?', '?', '?', '?'),
+    mutableStateListOf('?', '?', '?', '?', '?'),
+    mutableStateListOf('?', '?', '?', '?', '?'),
+    mutableStateListOf('?', '?', '?', '?', '?'),
+    mutableStateListOf('?', '?', '?', '?', '?'),
+)
+
+@Composable
+fun gameInitialized(initializeGameBoard:Boolean, wordDictionaryLoaded: Boolean, currentGuessInited: Boolean) = produceState(false, initializeGameBoard, wordDictionaryLoaded, currentGuessInited) {
+    value = initializeGameBoard.not() && wordDictionaryLoaded && currentGuessInited
+}
