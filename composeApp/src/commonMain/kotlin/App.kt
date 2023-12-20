@@ -14,6 +14,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +62,7 @@ fun ShowGameBoard() {
     var currentColumn: Int = 0
 
     val currentGuess = remember {
-        listOf(
+        mutableStateListOf(
             mutableStateListOf('?', '?', '?', '?', '?'),
             mutableStateListOf('?', '?', '?', '?', '?'),
             mutableStateListOf('?', '?', '?', '?', '?'),
@@ -75,9 +76,9 @@ fun ShowGameBoard() {
     var keyData by remember {
         mutableStateOf(
             KeyData(
-                'Q',
+                '?',
                 KeyType.ALPHA,
-                TileKeyStatus.MATCH_IN_POSITION
+                TileKeyStatus.INITIAL_KEY
             )
         )
     }
@@ -87,8 +88,13 @@ fun ShowGameBoard() {
 
 
     @Composable
+    fun gameInitialized() = produceState(false, initializeGameBoard, wordDictionary.isEmpty()) {
+        value = initializeGameBoard.not() && wordDictionary.isNotEmpty()
+    }
+
+    @Composable
     fun UpdateTiles(guess: List<Char> = currentGuess[currentRow]) {
-        if (initializeGameBoard.not() && wordDictionary.isNotEmpty()) {
+        if (gameInitialized().value) {
             for (column in 0..guess.lastIndex) {
                 if (wordDictionary[wordSelectionRow].wordList[column] == guess[column]) {
                     gameBoardState[currentRow][column] =
@@ -151,65 +157,67 @@ fun ShowGameBoard() {
         }
     }
 
-    SetCurrentColumn()
-    UpdateTiles()
-    Box(
-        Modifier.fillMaxSize().verticalScroll(scrollState),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        if (gameBoardState.isNotEmpty()) {
-            GameBoard(gameBoardState.mapIndexed() { index, titleDataList ->
-                RowData(rowPosition = index, tileData = titleDataList)
-            })
-        }
-        Column(Modifier.align(Alignment.BottomCenter)) {
-            KeyBoard(Modifier, keyData, restKeyboard, {
-                restKeyboard = false
-            }) { keyData ->
-                when (keyData.keyType) {
-                    KeyType.ALPHA -> keyData.char?.also {
-                        if (IntRange(0, 4).contains(currentColumn)) {
-                            currentGuess[currentRow][currentColumn] = it
-                        }
-                    }
-
-                    KeyType.DELETE -> {
-                        var prevIndex = currentColumn - 1
-                        if (prevIndex < 0) {
-                            prevIndex = 0
-                        }
-                        currentGuess[currentRow][prevIndex] = '?'
-                    }
-
-                    KeyType.ENTER -> {}
-                }
+    if (gameInitialized().value) {
+        SetCurrentColumn()
+        UpdateTiles()
+        Box(
+            Modifier.fillMaxSize().verticalScroll(scrollState),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            if (gameBoardState.isNotEmpty()) {
+                GameBoard(gameBoardState.mapIndexed() { index, titleDataList ->
+                    RowData(rowPosition = index, tileData = titleDataList)
+                })
             }
-            Row(
-                Modifier.fillMaxWidth().wrapContentHeight(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button({},
-                    enabled = produceState(false, currentGuess[currentRow]) {
-                        currentGuess[currentRow].contains('?').not()
-                    }.value
+            Column(Modifier.align(Alignment.BottomCenter)) {
+                KeyBoard(Modifier, keyData, restKeyboard, {
+                    restKeyboard = false
+                }) { keyData ->
+                    when (keyData.keyType) {
+                        KeyType.ALPHA -> keyData.char?.also {
+                            if (IntRange(0, 4).contains(currentColumn)) {
+                                currentGuess[currentRow][currentColumn] = it
+                            }
+                        }
+
+                        KeyType.DELETE -> {
+                            var prevIndex = currentColumn - 1
+                            if (prevIndex < 0) {
+                                prevIndex = 0
+                            }
+                            currentGuess[currentRow][prevIndex] = '?'
+                        }
+
+                        KeyType.ENTER -> {}
+                    }
+                }
+                Row(
+                    Modifier.fillMaxWidth().wrapContentHeight(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Guess")
-                }
-                Button({
-                    cnt = ++cnt % 2
-                }) {
-                    Text("new word")
-                }
-                if (wordDictionary.isNotEmpty()) {
-                    Text("${wordDictionary[0].wordList.toString()}")
+                    Button(
+                        {},
+                        enabled = allowGuess(currentGuess[currentRow][4]).value
+                    ) {
+                        Text("Guess")
+                    }
+                    Button({
+                        cnt = ++cnt % 2
+                    }) {
+                        Text("new word")
+                    }
+                    if (wordDictionary.isNotEmpty()) {
+                        Text("${wordDictionary[0].wordList.toString()}")
+                    }
                 }
             }
         }
     }
-
 }
 
-
-
+@Composable
+fun allowGuess(lastGuess:Char) = produceState(false, lastGuess) {
+    value = lastGuess != '?'
+}
 
