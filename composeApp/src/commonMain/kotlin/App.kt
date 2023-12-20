@@ -57,6 +57,8 @@ fun ShowGameBoard() {
     var wordDictionary = remember { mutableStateListOf<WordDictionary>() }
     var gameBoardState = remember { mutableListOf<MutableList<TileData>>() }
 
+    var renerAsGuess by remember { mutableStateOf(false) }
+
     var wordSelectionRow = 0
     var currentRow: Int = 0
     var currentColumn: Int = 0
@@ -93,32 +95,44 @@ fun ShowGameBoard() {
     }
 
     @Composable
-    fun UpdateTiles(guess: List<Char> = currentGuess[currentRow]) {
-        if (gameInitialized().value) {
-            for (column in 0..guess.lastIndex) {
-                if (wordDictionary[wordSelectionRow].wordList[column] == guess[column]) {
-                    gameBoardState[currentRow][column] =
-                        TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
-                } else {
-                    var fullList = wordDictionary[wordSelectionRow].wordList
-                    val result = fullList.subList(column, fullList.size).firstOrNull {
-                        it == guess[column]
-                    }?.also {
+    fun UpdateTiles(guess: List<Char> = currentGuess[currentRow], renderAsGuess : Boolean = renerAsGuess, onRenderCompleted : (Boolean)->Unit) {
+            if (renderAsGuess) {
+                for (column in 0..guess.lastIndex) {
+                    if (wordDictionary[wordSelectionRow].wordList[column] == guess[column]) {
                         gameBoardState[currentRow][column] =
-                            TileData(it, TileKeyStatus.MATCH_OUT_POSITION, column)
-                    }
-                    if (result == null) {
-                        if (guess[column] == '?') {
+                            TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
+                    } else {
+                        var fullList = wordDictionary[wordSelectionRow].wordList
+                        val result = fullList.subList(column, fullList.size).firstOrNull {
+                            it == guess[column]
+                        }?.also {
                             gameBoardState[currentRow][column] =
-                                TileData(guess[column], TileKeyStatus.EMPTY, column)
-                        } else {
-                            gameBoardState[currentRow][column] =
-                                TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                                TileData(it, TileKeyStatus.MATCH_OUT_POSITION, column)
+                        }
+                        if (result == null) {
+                            if (guess[column] == '?') {
+                                gameBoardState[currentRow][column] =
+                                    TileData(guess[column], TileKeyStatus.EMPTY, column)
+                            } else {
+                                gameBoardState[currentRow][column] =
+                                    TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                            }
                         }
                     }
                 }
+            } else {
+                for (column in 0..guess.lastIndex) {
+                    if (guess[column] == '?') {
+                        gameBoardState[currentRow][column] =
+                            TileData(guess[column], TileKeyStatus.EMPTY, column)
+                    }
+                    else {
+                        gameBoardState[currentRow][column] =
+                            TileData(guess[column], TileKeyStatus.NO_MATCH, column)
+                    }
+                }
             }
-        }
+            onRenderCompleted(renderAsGuess)
     }
 
 
@@ -159,7 +173,9 @@ fun ShowGameBoard() {
 
     if (gameInitialized().value) {
         SetCurrentColumn()
-        UpdateTiles()
+        UpdateTiles() {
+
+        }
         Box(
             Modifier.fillMaxSize().verticalScroll(scrollState),
             contentAlignment = Alignment.TopCenter
@@ -197,7 +213,7 @@ fun ShowGameBoard() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Button(
-                        {},
+                        { renerAsGuess = renerAsGuess.not()},
                         enabled = allowGuess(currentGuess[currentRow][4]).value
                     ) {
                         Text("Guess")
