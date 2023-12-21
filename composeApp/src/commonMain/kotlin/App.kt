@@ -64,8 +64,8 @@ fun ShowGameBoard() {
     var currentColumn by remember { mutableStateOf(0) }
 
     //var currentGuess = remember { mutableStateListOf(mutableStateListOf<Char>()) }
-    var currentGuess = remember { initCurrentGuess() }
-    var initCurrentGuess by remember { mutableStateOf(false) }
+    var currentGuess = remember { mutableStateListOf(mutableStateListOf<Char>()) }
+    var initCurrentGuess by remember { mutableStateOf(true) }
 
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
@@ -80,7 +80,6 @@ fun ShowGameBoard() {
     var restKeyboard by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
-
 
 
     @Composable
@@ -136,7 +135,8 @@ fun ShowGameBoard() {
 
     LaunchedEffect(initializeGameBoard) {
         if (initializeGameBoard) {
-            for (row in 0..5) {
+            gameBoardState.clear()
+            for (row in 0..6) {
                 gameBoardState.add(
                     mutableStateListOf(
                         TileData('X', TileKeyStatus.EMPTY, 0),
@@ -151,22 +151,6 @@ fun ShowGameBoard() {
         }
     }
 
-
-
-    @Composable
-    fun SetCurrentColumn(guess: List<Char>) {
-        if (guess.isNotEmpty()) {
-            guess.indexOf('?').let {
-                if (it > -1) {
-                    currentColumn = it
-                } else {
-                    currentColumn = 5
-                }
-            }
-        }
-    }
-
-
     LaunchedEffect(cnt) {
         wordDictionary.clear()
         WordlerRepo.getWordsAndDefinitions().entries.forEach {
@@ -178,16 +162,28 @@ fun ShowGameBoard() {
             )
         }
     }
+
+
+
     LaunchedEffect(initCurrentGuess) {
         if (initCurrentGuess) {
             currentGuess.clear()
-            currentGuess = initCurrentGuess()
+            for (i in 0..6) {
+                currentGuess.add(i, mutableStateListOf('?', '?', '?', '?', '?'))
+            }
             initCurrentGuess = false
         }
     }
 
-    if (gameInitialized(initializeGameBoard, wordDictionary.isNotEmpty(), initCurrentGuess.not()).value) {
-        SetCurrentColumn(currentGuess[currentRow])
+    if (gameInitialized(
+            initializeGameBoard,
+            wordDictionary.isNotEmpty(),
+            initCurrentGuess.not()
+        ).value
+    ) {
+        SetCurrentColumn(currentGuess[currentRow]) {
+            currentColumn = it
+        }
         UpdateTiles() {
 
         }
@@ -229,7 +225,7 @@ fun ShowGameBoard() {
                 ) {
                     Button(
                         { renerAsGuess = renerAsGuess.not() },
-                        enabled = if (initializeGameBoard) {
+                        enabled = if (initializeGameBoard.not()) {
                             allowGuess(currentGuess[currentRow][4]).value
                         } else {
                             false
@@ -247,10 +243,29 @@ fun ShowGameBoard() {
                     }) {
                         Text("new word")
                     }
-                    if (gameInitialized(initializeGameBoard, wordDictionary.isNotEmpty(), initCurrentGuess.not()).value) {
+                    if (gameInitialized(
+                            initializeGameBoard,
+                            wordDictionary.isNotEmpty(),
+                            initCurrentGuess.not()
+                        ).value
+                    ) {
                         Text("${wordDictionary[wordSelectionRow].wordList.toString()}")
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
+    if (guess.isNotEmpty()) {
+        guess.indexOf('?').let {
+            if (it > -1) {
+                onCurrentColumn(it)
+
+            } else {
+                onCurrentColumn(5)
             }
         }
     }
@@ -271,6 +286,10 @@ fun initCurrentGuess() = mutableStateListOf(
 )
 
 @Composable
-fun gameInitialized(initializeGameBoard:Boolean, wordDictionaryLoaded: Boolean, currentGuessInited: Boolean) = produceState(false, initializeGameBoard, wordDictionaryLoaded, currentGuessInited) {
+fun gameInitialized(
+    initializeGameBoard: Boolean,
+    wordDictionaryLoaded: Boolean,
+    currentGuessInited: Boolean
+) = produceState(false, initializeGameBoard, wordDictionaryLoaded, currentGuessInited) {
     value = initializeGameBoard.not() && wordDictionaryLoaded && currentGuessInited
 }
