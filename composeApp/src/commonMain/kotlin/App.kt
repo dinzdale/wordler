@@ -71,8 +71,8 @@ fun ShowGameBoard() {
     var keyData by remember {
         mutableStateOf(
             KeyData(
-                '?',
-                KeyType.ALPHA,
+                ';',
+                KeyType.ENTER,
                 TileKeyStatus.INITIAL_KEY
             )
         )
