@@ -69,13 +69,7 @@ fun ShowGameBoard() {
 
     var cnt by remember { mutableStateOf(0) }
     var keyData by remember {
-        mutableStateOf(
-            KeyData(
-                ';',
-                KeyType.ENTER,
-                TileKeyStatus.INITIAL_KEY
-            )
-        )
+        mutableStateOf<KeyData?>(null)
     }
     var restKeyboard by remember { mutableStateOf(false) }
 
@@ -192,6 +186,17 @@ fun ShowGameBoard() {
         }
     }
 
+    @Composable
+    fun UpdateEnterKey() {
+        var enabled = if (initializeGameBoard.not()) {
+            allowGuess(currentGuess[currentRow][4]).value
+        } else {
+            false
+        }
+        LaunchedEffect(enabled) {
+            keyData = KeyData(';', enabled, keyType = KeyType.ENTER)
+        }
+    }
 
     SetCurrentColumn(currentGuess[currentRow]) {
         currentColumn = it
@@ -199,6 +204,7 @@ fun ShowGameBoard() {
     UpdateTiles() {
 
     }
+    UpdateEnterKey()
     Box(
         Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter
@@ -227,7 +233,9 @@ fun ShowGameBoard() {
                         currentGuess[currentRow][prevIndex] = '?'
                     }
 
-                    KeyType.ENTER -> {}
+                    KeyType.ENTER -> {
+                        renerAsGuess = renerAsGuess.not()
+                    }
                 }
             }
             Row(

@@ -21,7 +21,7 @@ import model.ui.game_pieces.TileKeyStatus
 @Composable
 fun KeyBoard(
     modifier: Modifier,
-    keyData: KeyData,
+    keyData: KeyData?,
     reset: Boolean,
     onResetKeyboardComplete: () -> Unit,
     onSelectedKey: (KeyData) -> Unit
@@ -55,7 +55,7 @@ fun KeyBoard(
     }
     val bottomRow = remember {
         mutableStateListOf(
-            KeyData('?', KeyType.ENTER),
+            KeyData('?', enabled = false, KeyType.ENTER),
             KeyData('Z'),
             KeyData('X'),
             KeyData('C'),
@@ -63,7 +63,7 @@ fun KeyBoard(
             KeyData('B'),
             KeyData('N'),
             KeyData('M'),
-            KeyData('!', KeyType.DELETE)
+            KeyData('!', keyType = KeyType.DELETE)
         )
     }
 
@@ -83,20 +83,32 @@ fun KeyBoard(
         }
     }
     LaunchedEffect(keyData) {
-        if (keyData.keyType == KeyType.ALPHA) {
-            var index = topRow.indexOfFirst { it.char == keyData.char }
-            if (index != -1) {
-                topRow[index] = keyData
-            } else {
-                index = middleRow.indexOfFirst { it.char == keyData.char }
-                if (index != -1) {
-                    middleRow[index] = keyData
-                } else {
-                    index = bottomRow.indexOfFirst { it.char == keyData.char }
+        keyData?.also { kd ->
+            when (kd.keyType) {
+                KeyType.ALPHA -> {
+                    var index = topRow.indexOfFirst { it.char == kd.char }
                     if (index != -1) {
-                        bottomRow[index] = keyData
+                        topRow[index] = kd
+                    } else {
+                        index = middleRow.indexOfFirst { it.char == kd.char }
+                        if (index != -1) {
+                            middleRow[index] = kd
+                        } else {
+                            index = bottomRow.indexOfFirst { it.char == kd.char }
+                            if (index != -1) {
+                                bottomRow[index] = kd
+                            }
+                        }
                     }
                 }
+                KeyType.ENTER -> {
+                    bottomRow.indexOfFirst { it.keyType == KeyType.ENTER }?.also { index ->
+                        if (index > -1) {
+                            bottomRow[index] = kd
+                        }
+                    }
+                }
+                KeyType.DELETE -> {}
             }
         }
     }

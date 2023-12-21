@@ -55,7 +55,11 @@ fun EnterKey(keyData: KeyData, onKeySelection: (KeyData) -> Unit) {
         Modifier
             .width(64.dp)
             .height(48.dp).background(backGround, RoundedCornerShape(5.dp))
-            .clickable { onKeySelection(keyData) },
+            .clickable {
+                if (keyData.enabled) {
+                    onKeySelection(keyData)
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
