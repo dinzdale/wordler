@@ -232,7 +232,6 @@ fun ShowGameBoard() {
                         }
                         currentGuess[currentRow][prevIndex] = '?'
                     }
-
                     KeyType.ENTER -> {
                         renerAsGuess = renerAsGuess.not()
                     }
@@ -286,15 +285,6 @@ fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
 fun allowGuess(lastGuess: Char) = produceState(false, lastGuess) {
     value = lastGuess != '?'
 }
-
-fun initCurrentGuess() = mutableStateListOf(
-    mutableStateListOf('?', '?', '?', '?', '?'),
-    mutableStateListOf('?', '?', '?', '?', '?'),
-    mutableStateListOf('?', '?', '?', '?', '?'),
-    mutableStateListOf('?', '?', '?', '?', '?'),
-    mutableStateListOf('?', '?', '?', '?', '?'),
-    mutableStateListOf('?', '?', '?', '?', '?'),
-)
 
 @Composable
 fun gameInitialized(
