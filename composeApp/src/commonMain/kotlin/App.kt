@@ -243,16 +243,6 @@ fun ShowGameBoard() {
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(
-                    { renerAsGuess = renerAsGuess.not() },
-                    enabled = if (initializeGameBoard.not()) {
-                        allowGuess(currentGuess[currentRow][4]).value
-                    } else {
-                        false
-                    }
-                ) {
-                    Text("Guess")
-                }
                 Button({
                     wordSelectionRow = ++wordSelectionRow % 3
                     if (wordSelectionRow == 0) {

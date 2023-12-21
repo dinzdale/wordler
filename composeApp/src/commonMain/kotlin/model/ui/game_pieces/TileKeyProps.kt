@@ -9,10 +9,10 @@ enum class TileKeyStatus {
 
 enum class PieceColor(val backGround: Color, val foreGround: Color) {
     EMPTY(Color.Black, Color.Black),
-    DISABLED(Color.Gray, Color.White),
-    INITIAL_KEY(Color(red = 102, 107, 100), Color.White),
-    MATCH_IN_POSITION(Color(red = 70, 235, 52), Color.White),
-    MATCH_OUT_POSITION(Color(red = 235, 204, 52), Color.White),
+    DISABLED(Color(220, 222, 220), Color.White),
+    INITIAL_KEY(Color( 102, 107, 100), Color.White),
+    MATCH_IN_POSITION(Color( 70, 235, 52), Color.White),
+    MATCH_OUT_POSITION(Color(235, 204, 52), Color.White),
     NO_MATCH(Color.Black, Color.White);
 
     operator fun component1() = backGround
