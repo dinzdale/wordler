@@ -21,7 +21,7 @@ import model.ui.game_pieces.TileKeyStatus
 @Composable
 fun KeyBoard(
     modifier: Modifier,
-    keyDataUpdate: List<KeyData?>,
+    keyDataUpdate: List<KeyData>,
     reset: Boolean,
     onResetKeyboardComplete: () -> Unit,
     onSelectedKey: (KeyData) -> Unit
