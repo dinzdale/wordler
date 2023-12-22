@@ -68,13 +68,22 @@ fun ShowGameBoard() {
     var initCurrentGuess by remember { mutableStateOf(true) }
 
     var cnt by remember { mutableStateOf(0) }
-    var keyDataUpdate = remember { mutableListOf(
-        mutableStateOf(KeyData(';', enabled = false, KeyType.ENTER, status = TileKeyStatus.INITIAL_KEY)),
-        mutableStateOf(KeyData('?')),
-        mutableStateOf(KeyData('?')),
-        mutableStateOf(KeyData('?')),
-        mutableStateOf(KeyData('?')))
-     }
+    var keyDataUpdate = remember {
+        mutableListOf(
+            mutableStateOf(
+                KeyData(
+                    ';',
+                    enabled = false,
+                    KeyType.ENTER,
+                    status = TileKeyStatus.INITIAL_KEY
+                )
+            ),
+            mutableStateOf(KeyData('?')),
+            mutableStateOf(KeyData('?')),
+            mutableStateOf(KeyData('?')),
+            mutableStateOf(KeyData('?'))
+        )
+    }
     var restKeyboard by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
@@ -98,29 +107,24 @@ fun ShowGameBoard() {
                     guessHits[column].found = true
                     gameBoardState[currentRow][column] =
                         TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
-                    keyDataUpdate[column].value = KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
+                    keyDataUpdate[column].value =
+                        KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
                 } else {
-                   guessHits.firstOrNull {
-                        it.found.not() && it.char == guess[column]
-                    }?.also {
+                    guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
                         it.found = true
                         gameBoardState[currentRow][column] =
                             TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION, column)
-                        keyDataUpdate[column] .value= KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
-                    } ?: {
-                        keyDataUpdate[column].value = KeyData(guess[column], status = TileKeyStatus.SELECTED)
-                        if (guess[column] == '?') {
-                            gameBoardState[currentRow][column] =
-                                TileData(guess[column], TileKeyStatus.EMPTY, column)
-                        } else {
-                            gameBoardState[currentRow][column] =
-                                TileData(guess[column], TileKeyStatus.NO_MATCH, column)
-
-                        }
+                        keyDataUpdate[column].value =
+                            KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
+                    } ?: run {
+                        keyDataUpdate[column].value =
+                            KeyData(guess[column], status = TileKeyStatus.SELECTED)
                     }
                 }
             }
+
         } else {
+            restKeyboard = true
             for (column in 0..guess.lastIndex) {
                 if (guess[column] == '?') {
                     gameBoardState[currentRow][column] =
@@ -147,7 +151,7 @@ fun ShowGameBoard() {
                             TileData('X', TileKeyStatus.EMPTY, column++),
                             TileData('X', TileKeyStatus.EMPTY, column++),
                             TileData('X', TileKeyStatus.EMPTY, column++),
-                            TileData('X', TileKeyStatus.EMPTY, column++)
+                            TileData('X', TileKeyStatus.EMPTY, column)
                         )
                     )
                 }
@@ -202,7 +206,7 @@ fun ShowGameBoard() {
             false
         }
         LaunchedEffect(isEnabled) {
-            keyDataUpdate[0].value = KeyData(';',isEnabled,KeyType.ENTER)
+            keyDataUpdate[0].value = KeyData(';', isEnabled, KeyType.ENTER)
         }
     }
 
@@ -223,7 +227,7 @@ fun ShowGameBoard() {
             })
         }
         Column(Modifier.align(Alignment.BottomCenter)) {
-            KeyBoard(Modifier, keyDataUpdate.map {  it.value }, restKeyboard, {
+            KeyBoard(Modifier, keyDataUpdate.map { it.value }, restKeyboard, {
                 restKeyboard = false
             }) { keyData ->
                 when (keyData.keyType) {
@@ -240,6 +244,7 @@ fun ShowGameBoard() {
                         }
                         currentGuess[currentRow][prevIndex] = '?'
                     }
+
                     KeyType.ENTER -> {
                         renerAsGuess = renerAsGuess.not()
                     }
@@ -302,3 +307,5 @@ fun gameInitialized(
 ) = produceState(false, initializeGameBoard, wordDictionaryLoaded, initCurrentGuess) {
     value = initializeGameBoard.not() && wordDictionaryLoaded && initCurrentGuess.not()
 }
+
+
