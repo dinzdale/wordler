@@ -10,7 +10,7 @@ enum class TileKeyStatus {
 enum class PieceColor(val backGround: Color, val foreGround: Color) {
     EMPTY(Color.Black, Color.Black),
     DISABLED(Color(220, 222, 220), Color.White),
-    SELECTED(Color(57, 59, 57), Color.White),
+    SELECTED(Color(57, 59, 57), Color(143, 139, 137)),
     INITIAL_KEY(Color( 102, 107, 100), Color.White),
     MATCH_IN_POSITION(Color( 70, 235, 52), Color.White),
     MATCH_OUT_POSITION(Color(235, 204, 52), Color.White),
