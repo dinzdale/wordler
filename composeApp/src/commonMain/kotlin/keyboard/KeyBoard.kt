@@ -85,7 +85,7 @@ fun KeyBoard(
     LaunchedEffect(keyDataUpdate) {
         if (keyDataUpdate.isNotEmpty()) {
             keyDataUpdate.forEach { nxtKeyData ->
-                nxtKeyData?.keyType?.also { keyType ->
+                nxtKeyData.keyType?.also { keyType ->
                     when (keyType) {
                         KeyType.ALPHA -> {
                             var index = topRow.indexOfFirst { it.char == nxtKeyData.char }
