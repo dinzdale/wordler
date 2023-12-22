@@ -21,7 +21,7 @@ import model.ui.game_pieces.TileKeyStatus
 @Composable
 fun KeyBoard(
     modifier: Modifier,
-    keyData: KeyData?,
+    keyDataUpdate: List<KeyData?>,
     reset: Boolean,
     onResetKeyboardComplete: () -> Unit,
     onSelectedKey: (KeyData) -> Unit
@@ -82,33 +82,39 @@ fun KeyBoard(
             onResetKeyboardComplete()
         }
     }
-    LaunchedEffect(keyData) {
-        keyData?.also { kd ->
-            when (kd.keyType) {
-                KeyType.ALPHA -> {
-                    var index = topRow.indexOfFirst { it.char == kd.char }
-                    if (index != -1) {
-                        topRow[index] = kd
-                    } else {
-                        index = middleRow.indexOfFirst { it.char == kd.char }
-                        if (index != -1) {
-                            middleRow[index] = kd
-                        } else {
-                            index = bottomRow.indexOfFirst { it.char == kd.char }
+    LaunchedEffect(keyDataUpdate) {
+        if (keyDataUpdate.isNotEmpty()) {
+            keyDataUpdate.forEach { nxtKeyData ->
+                nxtKeyData?.keyType?.also { keyType ->
+                    when (keyType) {
+                        KeyType.ALPHA -> {
+                            var index = topRow.indexOfFirst { it.char == nxtKeyData.char }
                             if (index != -1) {
-                                bottomRow[index] = kd
+                                topRow[index] = nxtKeyData
+                            } else {
+                                index = middleRow.indexOfFirst { it.char == nxtKeyData.char }
+                                if (index != -1) {
+                                    middleRow[index] = nxtKeyData
+                                } else {
+                                    index = bottomRow.indexOfFirst { it.char == nxtKeyData.char }
+                                    if (index != -1) {
+                                        bottomRow[index] = nxtKeyData
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                KeyType.ENTER -> {
-                    bottomRow.indexOfFirst { it.keyType == KeyType.ENTER }?.also { index ->
-                        if (index > -1) {
-                            bottomRow[index] = kd
+
+                        KeyType.ENTER -> {
+                            bottomRow.indexOfFirst { it.keyType == KeyType.ENTER }.also { index ->
+                                if (index > -1) {
+                                    bottomRow[index] = nxtKeyData
+                                }
+                            }
                         }
+
+                        KeyType.DELETE -> {}
                     }
                 }
-                KeyType.DELETE -> {}
             }
         }
     }

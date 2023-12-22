@@ -4,12 +4,13 @@ import androidx.compose.ui.graphics.Color
 import model.DictionaryItem
 
 enum class TileKeyStatus {
-    INITIAL_KEY, NO_MATCH, MATCH_IN_POSITION, MATCH_OUT_POSITION, EMPTY,
+    INITIAL_KEY, NO_MATCH, SELECTED, MATCH_IN_POSITION, MATCH_OUT_POSITION, EMPTY,
 }
 
 enum class PieceColor(val backGround: Color, val foreGround: Color) {
     EMPTY(Color.Black, Color.Black),
     DISABLED(Color(220, 222, 220), Color.White),
+    SELECTED(Color(57, 59, 57), Color.White),
     INITIAL_KEY(Color( 102, 107, 100), Color.White),
     MATCH_IN_POSITION(Color( 70, 235, 52), Color.White),
     MATCH_OUT_POSITION(Color(235, 204, 52), Color.White),
@@ -35,6 +36,7 @@ enum class PieceColor(val backGround: Color, val foreGround: Color) {
                 TileKeyStatus.NO_MATCH -> NO_MATCH
                 TileKeyStatus.MATCH_IN_POSITION -> MATCH_IN_POSITION
                 TileKeyStatus.MATCH_OUT_POSITION -> MATCH_OUT_POSITION
+                TileKeyStatus.SELECTED -> SELECTED
             }
         }
     }
