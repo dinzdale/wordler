@@ -328,12 +328,12 @@ fun ShowGameBoard(
                         it.found = true
                         gameBoardState[currentRow][column] =
                             TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION, column)
-                        keyDataUpdate[currentRow] =
+                        keyDataUpdate[column] =
                             KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
                     } ?: run {
                         gameBoardState[currentRow][column] =
                             TileData(guess[column], TileKeyStatus.SELECTED, column)
-                        keyDataUpdate[currentRow] =
+                        keyDataUpdate[column] =
                             KeyData(guess[column], status = TileKeyStatus.SELECTED)
                     }
                 }
