@@ -207,8 +207,16 @@ fun ShowGameBoard(
         var isEnabled = allowGuess(currentGuess[currentRow][4]).value
         LaunchedEffect(isEnabled) {
             keyDataUpdate[0] = KeyData(';', isEnabled, KeyType.ENTER)
+            keyDataUpdate[1] = KeyData(';', isEnabled.not(), KeyType.DELETE)
         }
     }
+    @Composable
+    fun UpdateDeleteKey() {
+        LaunchedEffect(renerAsGuess) {
+            keyDataUpdate[1] = KeyData(';', renerAsGuess.not(), KeyType.DELETE)
+        }
+    }
+
     SetCurrentColumn(currentGuess[currentRow]) {
         currentColumn = it
     }
@@ -216,6 +224,7 @@ fun ShowGameBoard(
 
     }
     UpdateEnterKey()
+    UpdateDeleteKey()
     Box(
         Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter

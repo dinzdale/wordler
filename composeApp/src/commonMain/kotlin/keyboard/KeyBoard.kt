@@ -112,7 +112,13 @@ fun KeyBoard(
                             }
                         }
 
-                        KeyType.DELETE -> {}
+                        KeyType.DELETE -> {
+                            bottomRow.indexOfFirst { it.keyType == KeyType.DELETE }.also { index ->
+                                if (index > -1) {
+                                    bottomRow[index] = nxtKeyData
+                                }
+                            }
+                        }
                     }
                 }
             }
