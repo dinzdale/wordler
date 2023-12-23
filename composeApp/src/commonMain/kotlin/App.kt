@@ -58,160 +58,9 @@ fun InitGame(composeCnt: (Int) -> Unit) {
 
     var composeCnt by remember { mutableStateOf(0) }
 
-//    var wordDictionary = remember { mutableStateListOf<WordDictionary?>(null, null, null) }
-//    var gameBoardState = remember {
-//        mutableStateListOf(
-//            mutableStateListOf(
-//                TileData('X', TileKeyStatus.EMPTY, 0),
-//                TileData('X', TileKeyStatus.EMPTY, 1),
-//                TileData('X', TileKeyStatus.EMPTY, 2),
-//                TileData('X', TileKeyStatus.EMPTY, 3),
-//                TileData('X', TileKeyStatus.EMPTY, 4),
-//            ),
-//            mutableStateListOf(
-//                TileData('X', TileKeyStatus.EMPTY, 0),
-//                TileData('X', TileKeyStatus.EMPTY, 1),
-//                TileData('X', TileKeyStatus.EMPTY, 2),
-//                TileData('X', TileKeyStatus.EMPTY, 3),
-//                TileData('X', TileKeyStatus.EMPTY, 4),
-//            ),
-//            mutableStateListOf(
-//                TileData('X', TileKeyStatus.EMPTY, 0),
-//                TileData('X', TileKeyStatus.EMPTY, 1),
-//                TileData('X', TileKeyStatus.EMPTY, 2),
-//                TileData('X', TileKeyStatus.EMPTY, 3),
-//                TileData('X', TileKeyStatus.EMPTY, 4),
-//            )
-//        )
-//    }
-
-//    var renerAsGuess by remember { mutableStateOf(false) }
-
-    var wordSelectionRow by remember { mutableStateOf(0) }
-
-
-    //var currentGuess = remember { mutableStateListOf(mutableStateListOf<Char>()) }
-//    var currentGuess = remember {
-//        mutableStateListOf(
-//            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-//            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-//            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-//            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-//            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-//            mutableStateListOf<Char>('?', '?', '?', '?', '?')
-//        )
-//    }
-
-    var cnt by remember { mutableStateOf(0) }
-//    var keyDataUpdate = remember {
-//        mutableStateListOf(
-//            KeyData(
-//                ';',
-//                enabled = false,
-//                KeyType.ENTER,
-//                status = TileKeyStatus.INITIAL_KEY
-//            ),
-//            KeyData('?'),
-//            KeyData('?'),
-//            KeyData('?'),
-//            KeyData('?'),
-//        )
-//    }
     var restKeyboard by remember { mutableStateOf(false) }
 
-//    val scrollState = rememberScrollState()
-
-
-//    @Composable
-//    fun UpdateTiles(
-//        guess: List<Char> = currentGuess[currentRow],
-//        renderAsGuess: Boolean = renerAsGuess,
-//        onRenderCompleted: (Int) -> Unit
-//    ) {
-//        var composeCnt by remember { mutableStateOf(0) }
-//        if (renderAsGuess) {
-//            val guessHits = mutableListOf<GuessHit>().apply {
-//                for (i in 0..wordDictionary[wordSelectionRow].wordList.lastIndex) {
-//                    add(i, GuessHit(wordDictionary[wordSelectionRow].wordList[i], false))
-//                }
-//            }
-//
-//            for (column in 0..guess.lastIndex) {
-//                if (guessHits[column].char == guess[column] && guessHits[column].found.not()) {
-//                    guessHits[column].found = true
-//                    gameBoardState[currentRow][column] =
-//                        TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
-//                    keyDataUpdate[column].value =
-//                        KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
-//                } else {
-//                    guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
-//                        it.found = true
-//                        gameBoardState[currentRow][column] =
-//                            TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION, column)
-//                        keyDataUpdate[column].value =
-//                            KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
-//                    } ?: run {
-//                        gameBoardState[currentRow][column] =
-//                            TileData(guess[column], TileKeyStatus.SELECTED, column)
-//                        keyDataUpdate[column].value =
-//                            KeyData(guess[column], status = TileKeyStatus.SELECTED)
-//                    }
-//                }
-//            }
-//
-//        } else {
-//            restKeyboard = true
-//            for (column in 0..guess.lastIndex) {
-//                if (guess[column] == '?') {
-//                    gameBoardState[currentRow][column] =
-//                        TileData(guess[column], TileKeyStatus.EMPTY, column)
-//                } else {
-//                    gameBoardState[currentRow][column] =
-//                        TileData(guess[column], TileKeyStatus.NO_MATCH, column)
-//                }
-//            }
-//        }
-//
-//            onRenderCompleted(++composeCnt)
-//        }
-//
-//
-//
-//
-//    LaunchedEffect(cnt) {
-//        WordlerRepo.getWordsAndDefinitions().entries.forEachIndexed() { index, entry ->
-//            wordDictionary.add(
-//                index,
-//                WordDictionary(
-//                    entry.key.map { it.uppercaseChar() }.toList(),
-//                    entry.value
-//                )
-//            )
-//        }
-//    }
-
-    // include this
-//    @Composable
-//    fun UpdateEnterKey() {
-//        var isEnabled = allowGuess(currentGuess[currentRow][4]).value
-//        LaunchedEffect(isEnabled) {
-//            keyDataUpdate[0].value = KeyData(';', isEnabled, KeyType.ENTER)
-//        }
-//    }
-
-//    SetCurrentColumn(currentGuess[currentRow]) {
-//        currentColumn = it
-//    }
-//
-//
-////    UpdateTiles {
-////        println("compose count: $it")
-////    }
-//
-//
-//    UpdateEnterKey()
     composeCnt(++composeCnt)
-
 
     ShowGameBoard(
         restKeyboard,
@@ -221,8 +70,6 @@ fun InitGame(composeCnt: (Int) -> Unit) {
         {
             restKeyboard = false
         })
-    //renerAsGuess = false
-
 
 }
 
@@ -321,7 +168,7 @@ fun ShowGameBoard(
                     guessHits[column].found = true
                     gameBoardState[currentRow][column] =
                         TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
-                    keyDataUpdate[currentRow] =
+                    keyDataUpdate[column] =
                         KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
                 } else {
                     guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
