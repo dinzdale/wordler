@@ -65,7 +65,7 @@ fun InitGame(composeCnt: (Int) -> Unit) {
     ShowGameBoard(
         restKeyboard,
         {
-            println("Gameboard compositions $it")
+            //println("Gameboard compositions $it")
         },
         {
             restKeyboard = false
@@ -83,12 +83,13 @@ fun ShowGameBoard(
     var composeCnt by remember { mutableStateOf(0) }
 
     var wordDictionary = remember { mutableListOf<WordDictionary>() }
-    var wordDictionaryIndex by remember { mutableStateOf(0) }
     var wordSelectionRow by remember { mutableStateOf(0) }
 
     var currentRow by remember { mutableStateOf(0) }
     var currentColumn by remember { mutableStateOf(0) }
-    var renerAsGuess by remember { mutableStateOf(false) }
+    var renderAsGuess by remember { mutableStateOf(false) }
+    var checkForMatch by remember { mutableStateOf(false) }
+
     var currentGuess = remember {
         mutableStateListOf(
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
@@ -140,6 +141,7 @@ fun ShowGameBoard(
     }
     var loadWordDictionary by remember { mutableStateOf(true) }
 
+
     var scrollState = rememberScrollState()
 
 
@@ -152,11 +154,11 @@ fun ShowGameBoard(
     @Composable
     fun UpdateTiles(
         guess: List<Char> = currentGuess[currentRow],
-        renderAsGuess: Boolean = renerAsGuess,
-        onRenderCompleted: (Int) -> Unit
+        asGuess: Boolean = renderAsGuess,
+        onRenderCompleted: (Boolean) -> Unit
     ) {
-        var composeCnt by remember { mutableStateOf(0) }
-        if (renderAsGuess) {
+
+        if (asGuess) {
             val guessHits = mutableListOf<GuessHit>().apply {
                 for (i in 0..wordDictionary[wordSelectionRow].wordList.lastIndex) {
                     add(i, GuessHit(wordDictionary[wordSelectionRow].wordList[i], false))
@@ -199,7 +201,7 @@ fun ShowGameBoard(
             }
         }
 
-        onRenderCompleted(++composeCnt)
+        onRenderCompleted(asGuess)
     }
 
     @Composable
@@ -210,21 +212,39 @@ fun ShowGameBoard(
             keyDataUpdate[1] = KeyData(';', isEnabled.not(), KeyType.DELETE)
         }
     }
+
     @Composable
     fun UpdateDeleteKey() {
-        LaunchedEffect(renerAsGuess) {
-            keyDataUpdate[1] = KeyData(';', renerAsGuess.not(), KeyType.DELETE)
+        LaunchedEffect(renderAsGuess) {
+            keyDataUpdate[1] = KeyData(';', renderAsGuess.not(), KeyType.DELETE)
         }
     }
 
     SetCurrentColumn(currentGuess[currentRow]) {
         currentColumn = it
     }
-    UpdateTiles(currentGuess[currentRow], renerAsGuess) {
-
+    UpdateTiles(currentGuess[currentRow], renderAsGuess) { isGuess->
+        if (isGuess) {
+            checkForMatch = true
+        }
     }
     UpdateEnterKey()
     UpdateDeleteKey()
+    if (wordDictionary.isNotEmpty()) {
+        CheckForMatch(
+            checkForMatch,
+            currentGuess[currentRow].joinToString(""),
+            wordDictionary[wordSelectionRow].wordList.joinToString("")
+        ) { matched ->
+            checkForMatch = false
+            if (matched) {
+                println("We have a winner!!!")
+            } else {
+                // move to next row
+                println("Sorry, no match...try again")
+            }
+        }
+    }
     Box(
         Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter
@@ -257,7 +277,7 @@ fun ShowGameBoard(
                     }
 
                     KeyType.ENTER -> {
-                        renerAsGuess = renerAsGuess.not()
+                        renderAsGuess = renderAsGuess.not()
                     }
                 }
             }
@@ -333,3 +353,14 @@ fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
     }
 }
 
+@Composable
+fun CheckForMatch(
+    doCheck: Boolean,
+    guess: String,
+    wordToMatch: String,
+    onMatchCheck: (Boolean) -> Unit
+) {
+    if (doCheck) {
+        onMatchCheck(guess == wordToMatch)
+    }
+}
