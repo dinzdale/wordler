@@ -92,6 +92,8 @@ fun ShowGameBoard(
     var renderAsGuess by remember { mutableStateOf(false) }
     var checkForMatch by remember { mutableStateOf(false) }
     var checkisWord by remember { mutableStateOf(false) }
+    var checkGameFinish by remember { mutableStateOf(false) }
+    var gameOverState by remember { mutableStateOf(false) }
 
     var currentGuess = remember {
         mutableStateListOf(
@@ -158,53 +160,55 @@ fun ShowGameBoard(
     fun UpdateTiles(
         guess: List<Char> = currentGuess[currentRow],
         asGuess: Boolean = renderAsGuess,
+        gameOver: Boolean = gameOverState,
         onRenderCompleted: (Boolean) -> Unit
     ) {
-
-        if (asGuess) {
-            val guessHits = mutableListOf<GuessHit>().apply {
-                for (i in 0..wordDictionary[wordSelectionRow].wordList.lastIndex) {
-                    add(i, GuessHit(wordDictionary[wordSelectionRow].wordList[i], false))
+        if (gameOverState.not()) {
+            if (asGuess) {
+                val guessHits = mutableListOf<GuessHit>().apply {
+                    for (i in 0..wordDictionary[wordSelectionRow].wordList.lastIndex) {
+                        add(i, GuessHit(wordDictionary[wordSelectionRow].wordList[i], false))
+                    }
                 }
-            }
 
-            for (column in 0..guess.lastIndex) {
-                if (guessHits[column].char == guess[column] && guessHits[column].found.not()) {
-                    guessHits[column].found = true
-                    gameBoardState[currentRow][column] =
-                        TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
-                    keyDataUpdate[column] =
-                        KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
-                } else {
-                    guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
-                        it.found = true
+                for (column in 0..guess.lastIndex) {
+                    if (guessHits[column].char == guess[column] && guessHits[column].found.not()) {
+                        guessHits[column].found = true
                         gameBoardState[currentRow][column] =
-                            TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION, column)
+                            TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION, column)
                         keyDataUpdate[column] =
-                            KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
-                    } ?: run {
+                            KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
+                    } else {
+                        guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
+                            it.found = true
+                            gameBoardState[currentRow][column] =
+                                TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION, column)
+                            keyDataUpdate[column] =
+                                KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
+                        } ?: run {
+                            gameBoardState[currentRow][column] =
+                                TileData(guess[column], TileKeyStatus.SELECTED, column)
+                            keyDataUpdate[column] =
+                                KeyData(guess[column], status = TileKeyStatus.SELECTED)
+                        }
+                    }
+                }
+
+            } else {
+                //restKeyboard = true
+                for (column in 0..guess.lastIndex) {
+                    if (guess[column] == '?') {
                         gameBoardState[currentRow][column] =
-                            TileData(guess[column], TileKeyStatus.SELECTED, column)
-                        keyDataUpdate[column] =
-                            KeyData(guess[column], status = TileKeyStatus.SELECTED)
+                            TileData(guess[column], TileKeyStatus.EMPTY, column)
+                    } else {
+                        gameBoardState[currentRow][column] =
+                            TileData(guess[column], TileKeyStatus.NO_MATCH, column)
                     }
                 }
             }
 
-        } else {
-            //restKeyboard = true
-            for (column in 0..guess.lastIndex) {
-                if (guess[column] == '?') {
-                    gameBoardState[currentRow][column] =
-                        TileData(guess[column], TileKeyStatus.EMPTY, column)
-                } else {
-                    gameBoardState[currentRow][column] =
-                        TileData(guess[column], TileKeyStatus.NO_MATCH, column)
-                }
-            }
+            onRenderCompleted(asGuess)
         }
-
-        onRenderCompleted(asGuess)
     }
 
     @Composable
@@ -239,24 +243,42 @@ fun ShowGameBoard(
             currentGuess[currentRow].joinToString(""),
             wordDictionary[wordSelectionRow].wordList.joinToString("")
         ) { matched ->
-            checkForMatch = false
             if (matched) {
                 println("We have a winner!!!")
             } else {
                 // no match yet, check if is Word
                 checkisWord = true
             }
+            checkForMatch = false
         }
 
         CheckIsWord(checkisWord, currentGuess[currentRow].joinToString("")) {
-            checkisWord = false
             it.onSuccess {
                 // yes, show dictionary item and setup to move to next guess
                 println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
+                checkGameFinish = true
             }
             it.onFailure {
                 // not a word, let user know and continue to edit same guess
                 println("sorry, not a word")
+            }
+            checkisWord = false
+        }
+    }
+    LaunchedEffect(checkGameFinish) {
+        if (checkGameFinish) {
+
+            checkGameFinish = false
+            if (currentRow == 2) {
+                gameOverState = true
+                println("GAME FINISHED")
+            }
+            else {
+                // move to next guess line
+                // reset everything
+                renderAsGuess = false
+                currentColumn = 0
+                ++currentRow
             }
         }
     }
