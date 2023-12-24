@@ -212,8 +212,7 @@ fun ShowGameBoard(
     }
 
     @Composable
-    fun UpdateEnterKey() {
-        var isEnabled = allowGuess(currentGuess[currentRow][4]).value
+    fun UpdateEnterKey(isEnabled:Boolean = allowGuess(currentGuess[currentRow][4]).value) {
         LaunchedEffect(isEnabled) {
             keyDataUpdate[0] = KeyData(';', isEnabled, KeyType.ENTER)
             keyDataUpdate[1] = KeyData(';', isEnabled.not(), KeyType.DELETE)
@@ -221,15 +220,21 @@ fun ShowGameBoard(
     }
 
     @Composable
-    fun UpdateDeleteKey() {
-        LaunchedEffect(renderAsGuess) {
-            keyDataUpdate[1] = KeyData(';', renderAsGuess.not(), KeyType.DELETE)
+    fun UpdateDeleteKey(asGuess:Boolean = renderAsGuess) {
+        LaunchedEffect(asGuess) {
+            keyDataUpdate[1] = KeyData(';', asGuess.not(), KeyType.DELETE)
         }
     }
 
-    SetCurrentColumn(currentGuess[currentRow]) {
-        currentColumn = it
+    LaunchedEffect(currentGuess[currentRow][currentColumn]) {
+        SetCurrentColumn(currentGuess[currentRow]) {
+            currentColumn = it
+        }
     }
+//    SetCurrentColumn(currentGuess[currentRow]) {
+//        currentColumn = it
+//    }
+
     UpdateTiles(currentGuess[currentRow], renderAsGuess) { isGuess ->
         if (isGuess) {
             checkForMatch = true
@@ -238,31 +243,36 @@ fun ShowGameBoard(
     UpdateEnterKey()
     UpdateDeleteKey()
     if (wordDictionary.isNotEmpty()) {
-        CheckForMatch(
-            checkForMatch,
-            currentGuess[currentRow].joinToString(""),
-            wordDictionary[wordSelectionRow].wordList.joinToString("")
-        ) { matched ->
-            if (matched) {
-                println("We have a winner!!!")
-            } else {
-                // no match yet, check if is Word
-                checkisWord = true
+        // Check for match
+        LaunchedEffect(checkForMatch) {
+            if (checkForMatch) {
+                val guess = currentGuess[currentRow].joinToString("")
+                val wordToMatch = wordDictionary[wordSelectionRow].wordList.joinToString("")
+                if (guess == wordToMatch) {
+                    println("We have a winner!!!")
+                } else {
+                    checkisWord = true
+                }
+                checkForMatch = true
             }
-            checkForMatch = false
         }
-
-        CheckIsWord(checkisWord, currentGuess[currentRow].joinToString("")) {
-            it.onSuccess {
-                // yes, show dictionary item and setup to move to next guess
-                println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
-                checkGameFinish = true
+        // Verify if guess is valid word
+        LaunchedEffect(checkisWord) {
+            if (checkisWord) {
+                val guess = currentGuess[currentRow].joinToString("")
+                WordlerAPI.getDictionaryDefinition(guess).also {
+                    it.onSuccess {
+                        // yes, show dictionary item and setup to move to next guess
+                        println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
+                        checkGameFinish = true
+                    }
+                    it.onFailure {
+                        // not a word, let user know and continue to edit same guess
+                        println("sorry, not a word")
+                    }
+                    checkisWord = false
+                }
             }
-            it.onFailure {
-                // not a word, let user know and continue to edit same guess
-                println("sorry, not a word")
-            }
-            checkisWord = false
         }
     }
     LaunchedEffect(checkGameFinish) {
@@ -272,8 +282,7 @@ fun ShowGameBoard(
             if (currentRow == 2) {
                 gameOverState = true
                 println("GAME FINISHED")
-            }
-            else {
+            } else {
                 // move to next guess line
                 // reset everything
                 renderAsGuess = false
@@ -304,15 +313,12 @@ fun ShowGameBoard(
                             currentGuess[currentRow][currentColumn] = it
                         }
                     }
-
                     KeyType.DELETE -> {
-                        var prevIndex = currentColumn - 1
-                        if (prevIndex < 0) {
-                            prevIndex = 0
+                        if (--currentColumn < 0) {
+                            currentColumn = 0
                         }
-                        currentGuess[currentRow][prevIndex] = '?'
+                        currentGuess[currentRow][currentColumn] = '?'
                     }
-
                     KeyType.ENTER -> {
                         renderAsGuess = renderAsGuess.not()
                     }
@@ -376,15 +382,14 @@ fun gameInitialized(
     value = wordDictionaryLoaded
 }
 
-@Composable
+
 fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
     if (guess.isNotEmpty()) {
-        guess.indexOf('?').let {
+        guess.indexOf('?').also {
             if (it > -1) {
                 onCurrentColumn(it)
-
             } else {
-                onCurrentColumn(5)
+                onCurrentColumn(4)
             }
         }
     }
@@ -403,7 +408,11 @@ fun CheckForMatch(
 }
 
 @Composable
-fun CheckIsWord(doCheck: Boolean, word: String, onResult: (Result<List<DictionaryItem>>) -> Unit) {
+fun CheckIsWord(
+    doCheck: Boolean,
+    word: String,
+    onResult: (Result<List<DictionaryItem>>) -> Unit
+) {
     LaunchedEffect(doCheck) {
         if (doCheck) {
             onResult(WordlerAPI.getDictionaryDefinition(word))
