@@ -1,3 +1,4 @@
+import Network.WordlerAPI
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import gameboard.GameBoard
 import keyboard.KeyBoard
+import model.DictionaryItem
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
 import model.ui.game_pieces.KeyData
@@ -89,6 +91,7 @@ fun ShowGameBoard(
     var currentColumn by remember { mutableStateOf(0) }
     var renderAsGuess by remember { mutableStateOf(false) }
     var checkForMatch by remember { mutableStateOf(false) }
+    var checkisWord by remember { mutableStateOf(false) }
 
     var currentGuess = remember {
         mutableStateListOf(
@@ -223,7 +226,7 @@ fun ShowGameBoard(
     SetCurrentColumn(currentGuess[currentRow]) {
         currentColumn = it
     }
-    UpdateTiles(currentGuess[currentRow], renderAsGuess) { isGuess->
+    UpdateTiles(currentGuess[currentRow], renderAsGuess) { isGuess ->
         if (isGuess) {
             checkForMatch = true
         }
@@ -240,8 +243,20 @@ fun ShowGameBoard(
             if (matched) {
                 println("We have a winner!!!")
             } else {
-                // move to next row
-                println("Sorry, no match...try again")
+                // no match yet, check if is Word
+                checkisWord = true
+            }
+        }
+
+        CheckIsWord(checkisWord, currentGuess[currentRow].joinToString("")) {
+            checkisWord = false
+            it.onSuccess {
+                // yes, show dictionary item and setup to move to next guess
+                println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
+            }
+            it.onFailure {
+                // not a word, let user know and continue to edit same guess
+                println("sorry, not a word")
             }
         }
     }
@@ -362,5 +377,14 @@ fun CheckForMatch(
 ) {
     if (doCheck) {
         onMatchCheck(guess == wordToMatch)
+    }
+}
+
+@Composable
+fun CheckIsWord(doCheck: Boolean, word: String, onResult: (Result<List<DictionaryItem>>) -> Unit) {
+    LaunchedEffect(doCheck) {
+        if (doCheck) {
+            onResult(WordlerAPI.getDictionaryDefinition(word))
+        }
     }
 }

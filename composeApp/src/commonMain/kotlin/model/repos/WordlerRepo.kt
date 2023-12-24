@@ -4,6 +4,7 @@ import Network.WordlerAPI
 import androidx.compose.foundation.layout.Box
 import model.Definition
 import model.DictionaryItem
+import model.ui.game_pieces.WordDictionary
 
 
 object WordlerRepo {
@@ -31,4 +32,7 @@ object WordlerRepo {
         }
         return wordsAndDefs
     }
+
+    suspend fun getDictionary(word: String) = WordlerAPI.getDictionaryDefinition(word)
+
 }
