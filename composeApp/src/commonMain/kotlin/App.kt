@@ -212,15 +212,15 @@ fun ShowGameBoard(
     }
 
     @Composable
-    fun UpdateEnterKey(isEnabled:Boolean = allowGuess(currentGuess[currentRow][4]).value) {
+    fun UpdateEnterKey(isEnabled: Boolean = allowGuess(currentGuess[currentRow][4]).value) {
         LaunchedEffect(isEnabled) {
             keyDataUpdate[0] = KeyData(';', isEnabled, KeyType.ENTER)
-            keyDataUpdate[1] = KeyData(';', isEnabled.not(), KeyType.DELETE)
+            //keyDataUpdate[1] = KeyData(';', isEnabled.not(), KeyType.DELETE)
         }
     }
 
     @Composable
-    fun UpdateDeleteKey(asGuess:Boolean = renderAsGuess) {
+    fun UpdateDeleteKey(asGuess: Boolean = renderAsGuess) {
         LaunchedEffect(asGuess) {
             keyDataUpdate[1] = KeyData(';', asGuess.not(), KeyType.DELETE)
         }
@@ -313,12 +313,22 @@ fun ShowGameBoard(
                             currentGuess[currentRow][currentColumn] = it
                         }
                     }
+
                     KeyType.DELETE -> {
-                        if (--currentColumn < 0) {
-                            currentColumn = 0
+                        if (currentColumn == 4) {
+                            if (currentGuess[currentRow][currentColumn] != '?') {
+                                currentGuess[currentRow][currentColumn] = '?'
+                            } else {
+                                currentGuess[currentRow][--currentColumn] = '?'
+                            }
+                        } else {
+                            if (--currentColumn < 0) {
+                                currentColumn = 0
+                            }
+                            currentGuess[currentRow][currentColumn] = '?'
                         }
-                        currentGuess[currentRow][currentColumn] = '?'
                     }
+
                     KeyType.ENTER -> {
                         renderAsGuess = renderAsGuess.not()
                     }
