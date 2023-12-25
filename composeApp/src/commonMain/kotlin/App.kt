@@ -161,9 +161,9 @@ fun ShowGameBoard(
         guess: List<Char> = currentGuess[currentRow],
         asGuess: Boolean = renderAsGuess,
         gameOver: Boolean = gameOverState,
-        onRenderCompleted: (Boolean) -> Unit
+        onRenderCompleted: @Composable (Boolean) -> Unit
     ) {
-        if (gameOverState.not()) {
+        if (gameOver.not()) {
             if (asGuess) {
                 val guessHits = mutableListOf<GuessHit>().apply {
                     for (i in 0..wordDictionary[wordSelectionRow].wordList.lastIndex) {
@@ -231,15 +231,15 @@ fun ShowGameBoard(
             currentColumn = it
         }
     }
-//    SetCurrentColumn(currentGuess[currentRow]) {
-//        currentColumn = it
-//    }
+
+
 
     UpdateTiles(currentGuess[currentRow], renderAsGuess) { isGuess ->
-        if (isGuess) {
-            checkForMatch = true
+        LaunchedEffect(isGuess) {
+            checkForMatch = isGuess
         }
     }
+
     UpdateEnterKey()
     UpdateDeleteKey()
     if (wordDictionary.isNotEmpty()) {
@@ -267,6 +267,7 @@ fun ShowGameBoard(
                         checkGameFinish = true
                     }
                     it.onFailure {
+                        renderAsGuess = false
                         // not a word, let user know and continue to edit same guess
                         println("sorry, not a word")
                     }
@@ -277,7 +278,6 @@ fun ShowGameBoard(
     }
     LaunchedEffect(checkGameFinish) {
         if (checkGameFinish) {
-
             checkGameFinish = false
             if (currentRow == 2) {
                 gameOverState = true
