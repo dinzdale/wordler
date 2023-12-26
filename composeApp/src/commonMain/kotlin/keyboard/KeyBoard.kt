@@ -70,15 +70,34 @@ fun KeyBoard(
     @Composable
     fun ResetKeys(reset: Boolean) {
         if (reset) {
-            for (index in 0..topRow.lastIndex) {
-                topRow[index] = topRow[index].copy(status = TileKeyStatus.INITIAL_KEY)
-            }
-            for (index in 0..middleRow.lastIndex) {
-                middleRow[index] = middleRow[index].copy(status = TileKeyStatus.INITIAL_KEY)
-            }
-            for (index in 0..bottomRow.lastIndex) {
-                bottomRow[index] = bottomRow[index].copy(status = TileKeyStatus.INITIAL_KEY)
-            }
+            topRow.set(0, KeyData('Q'))
+            topRow.set(1, KeyData('W'))
+            topRow.set(2, KeyData('E'))
+            topRow.set(3, KeyData('R'))
+            topRow.set(4, KeyData('T'))
+            topRow.set(5, KeyData('Y'))
+            topRow.set(6, KeyData('U'))
+            topRow.set(7, KeyData('I'))
+            topRow.set(8, KeyData('O'))
+            topRow.set(9, KeyData('P'))
+            middleRow.set(0, KeyData('A'))
+            middleRow.set(0, KeyData('S'))
+            middleRow.set(1, KeyData('D'))
+            middleRow.set(2, KeyData('F'))
+            middleRow.set(3, KeyData('G'))
+            middleRow.set(4, KeyData('H'))
+            middleRow.set(5, KeyData('J'))
+            middleRow.set(6, KeyData('K'))
+            middleRow.set(7, KeyData('L'))
+            bottomRow.set(0, KeyData('?', enabled = false, KeyType.ENTER))
+            bottomRow.set(1, KeyData('Z'))
+            bottomRow.set(1, KeyData('X'))
+            bottomRow.set(2, KeyData('C'))
+            bottomRow.set(3, KeyData('V'))
+            bottomRow.set(4, KeyData('B'))
+            bottomRow.set(5, KeyData('N'))
+            bottomRow.set(6, KeyData('M'))
+            bottomRow.set(7, KeyData('!', keyType = KeyType.DELETE))
             onResetKeyboardComplete()
         }
     }
