@@ -90,7 +90,19 @@ fun KeyBoard(
                         KeyType.ALPHA -> {
                             var index = topRow.indexOfFirst { it.char == nxtKeyData.char }
                             if (index != -1) {
-                                topRow[index] = nxtKeyData
+                                if (topRow[index].char == nxtKeyData.char) {
+                                    if (topRow[index].status == TileKeyStatus.SELECTED && nxtKeyData.status == TileKeyStatus.SELECTED) {
+                                        topRow[index] =
+                                            nxtKeyData.copy(count = topRow[index].count + 1)
+                                    } else if (topRow[index].status == TileKeyStatus.SELECTED && topRow[index].count > 0) {
+                                        topRow[index] =
+                                            topRow[index].copy(count = topRow[index].count - 1)
+                                    } else {
+                                        topRow[index] = nxtKeyData
+                                    }
+                                } else {
+                                    topRow[index] = nxtKeyData
+                                }
                             } else {
                                 index = middleRow.indexOfFirst { it.char == nxtKeyData.char }
                                 if (index != -1) {

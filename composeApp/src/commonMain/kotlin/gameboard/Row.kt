@@ -30,7 +30,7 @@ fun TileRow(
             }
         }
         for (i in tileData.size..4) {
-            Tile(TileData('X', TileKeyStatus.EMPTY, i))
+            Tile(TileData('X', TileKeyStatus.EMPTY))
             Spacer(Modifier.width(5.dp))
         }
     }
