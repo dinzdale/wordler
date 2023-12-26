@@ -18,6 +18,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,28 +69,15 @@ fun ShowLayout() {
 @Composable
 fun InitGame(showSnackBarMessage : (String)->Unit) {
 
-    var composeCnt by remember { mutableStateOf(0) }
-
-    var restKeyboard by remember { mutableStateOf(false) }
-
-
-    ShowGameBoard(
-        restKeyboard,
-        showSnackBarMessage,
-        {
-            restKeyboard = false
-        })
+    ShowGameBoard(showSnackBarMessage)
 
 }
 
 
 @Composable
 fun ShowGameBoard(
-    resetKeyboard: Boolean,
     showSnackBarMessage: (String) -> Unit,
-    onKeyboardResetComplete: () -> Unit
 ) {
-    var composeCnt by remember { mutableStateOf(0) }
 
     var wordDictionary = remember { mutableListOf<WordDictionary>() }
     var wordSelectionRow by remember { mutableStateOf(0) }
@@ -102,6 +90,9 @@ fun ShowGameBoard(
     var checkisWord by remember { mutableStateOf(false) }
     var checkGameFinish by remember { mutableStateOf(false) }
     var gameOverState by remember { mutableStateOf(false) }
+
+    var resetGameBoard by remember { mutableStateOf(false) }
+    var resetKeyboard by remember { mutableStateOf(false) }
 
     var currentGuess = remember {
         mutableStateListOf(
@@ -178,6 +169,24 @@ fun ShowGameBoard(
 
     var scrollState = rememberScrollState()
 
+
+    LaunchedEffect(resetGameBoard) {
+        if (resetGameBoard) {
+            currentRow = 0
+            currentColumn = 0
+            for (row in 0..currentGuess.lastIndex) {
+                for (column in 0..currentGuess[0].lastIndex) {
+                    currentGuess[row][column] = '?'
+                }
+            }
+            for (row in 0..gameBoardState.lastIndex) {
+                for (column in 0 .. gameBoardState[0].lastIndex) {
+                    gameBoardState[row][column] = TileData('X', TileKeyStatus.EMPTY)
+                }
+            }
+        }
+        resetGameBoard = false
+    }
 
     GetWordDictionary(loadWordDictionary) {
         loadWordDictionary = false
@@ -340,7 +349,10 @@ fun ShowGameBoard(
                 Modifier,
                 keyDataUpdate.toList(),
                 resetKeyboard,
-                onKeyboardResetComplete
+                {
+                    resetKeyboard = false
+                    resetGameBoard = true
+                }
             ) { keyData ->
                 when (keyData.keyType) {
                     KeyType.ALPHA -> keyData.char?.also {
@@ -382,6 +394,7 @@ fun ShowGameBoard(
                             loadWordDictionary = true
                         }
                     }
+                    resetKeyboard = true
                 }) {
                     Text("new word")
                 }
