@@ -236,7 +236,9 @@ fun ShowGameBoard(
 
     UpdateTiles(currentGuess[currentRow], renderAsGuess) { isGuess ->
         LaunchedEffect(isGuess) {
-            checkForMatch = isGuess
+            if (isGuess) {
+                checkGameFinish = true
+            }
         }
     }
 
@@ -251,9 +253,10 @@ fun ShowGameBoard(
                 if (guess == wordToMatch) {
                     println("We have a winner!!!")
                 } else {
+                    println("Not a match, check if is a word")
                     checkisWord = true
                 }
-                checkForMatch = true
+                checkForMatch = false
             }
         }
         // Verify if guess is valid word
@@ -264,10 +267,9 @@ fun ShowGameBoard(
                     it.onSuccess {
                         // yes, show dictionary item and setup to move to next guess
                         println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
-                        checkGameFinish = true
+                        renderAsGuess = true
                     }
                     it.onFailure {
-                        renderAsGuess = false
                         // not a word, let user know and continue to edit same guess
                         println("sorry, not a word")
                     }
@@ -330,7 +332,8 @@ fun ShowGameBoard(
                     }
 
                     KeyType.ENTER -> {
-                        renderAsGuess = renderAsGuess.not()
+                        //renderAsGuess = renderAsGuess.not()
+                        checkForMatch = true
                     }
                 }
             }
