@@ -91,6 +91,7 @@ fun ShowGameBoard(
     var currentColumn by remember { mutableStateOf(0) }
     var renderAsGuess by remember { mutableStateOf(false) }
     var checkForMatch by remember { mutableStateOf(false) }
+    var matchFound by remember { mutableStateOf(false) }
     var checkisWord by remember { mutableStateOf(false) }
     var checkGameFinish by remember { mutableStateOf(false) }
     var gameOverState by remember { mutableStateOf(false) }
@@ -251,6 +252,8 @@ fun ShowGameBoard(
                 val guess = currentGuess[currentRow].joinToString("")
                 val wordToMatch = wordDictionary[wordSelectionRow].wordList.joinToString("")
                 if (guess == wordToMatch) {
+                    matchFound = true
+                    renderAsGuess = true
                     println("We have a winner!!!")
                 } else {
                     println("Not a match, check if is a word")
@@ -281,15 +284,20 @@ fun ShowGameBoard(
     LaunchedEffect(checkGameFinish) {
         if (checkGameFinish) {
             checkGameFinish = false
-            if (currentRow == 2) {
-                gameOverState = true
-                println("GAME FINISHED")
+            if (matchFound.not()) {
+                if (currentRow == 2) {
+                    gameOverState = true
+                    println("GAME FINISHED - not match, sorry")
+                } else {
+                    // move to next guess line
+                    // reset everything
+                    renderAsGuess = false
+                    currentColumn = 0
+                    ++currentRow
+                }
             } else {
-                // move to next guess line
-                // reset everything
-                renderAsGuess = false
-                currentColumn = 0
-                ++currentRow
+                gameOverState = true
+                println("GAME FINISHED -- with a match")
             }
         }
     }
