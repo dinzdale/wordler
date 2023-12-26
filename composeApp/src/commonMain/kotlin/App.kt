@@ -11,6 +11,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,11 +23,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import gameboard.GameBoard
 import keyboard.KeyBoard
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
 import model.ui.game_pieces.KeyData
@@ -34,6 +40,7 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 import model.ui.game_pieces.WordDictionary
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import kotlin.time.Duration
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -45,9 +52,13 @@ fun App() {
 fun ShowLayout() {
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
-            Scaffold(modifier = Modifier.fillMaxSize()) {
-                InitGame {
-                    println("toplevel compositions $it")
+            var snackbarHostState = remember { SnackbarHostState() }
+            Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = { SnackbarHost(snackbarHostState) }) {
+                val scope = rememberCoroutineScope()
+                InitGame { message->
+                    scope.launch {
+                        snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
+                    }
                 }
             }
         }
@@ -55,19 +66,16 @@ fun ShowLayout() {
 }
 
 @Composable
-fun InitGame(composeCnt: (Int) -> Unit) {
+fun InitGame(showSnackBarMessage : (String)->Unit) {
 
     var composeCnt by remember { mutableStateOf(0) }
 
     var restKeyboard by remember { mutableStateOf(false) }
 
-    composeCnt(++composeCnt)
 
     ShowGameBoard(
         restKeyboard,
-        {
-            //println("Gameboard compositions $it")
-        },
+        showSnackBarMessage,
         {
             restKeyboard = false
         })
@@ -78,7 +86,7 @@ fun InitGame(composeCnt: (Int) -> Unit) {
 @Composable
 fun ShowGameBoard(
     resetKeyboard: Boolean,
-    onComposeCnt: (Int) -> Unit,
+    showSnackBarMessage: (String) -> Unit,
     onKeyboardResetComplete: () -> Unit
 ) {
     var composeCnt by remember { mutableStateOf(0) }
@@ -273,9 +281,7 @@ fun ShowGameBoard(
                 if (guess == wordToMatch) {
                     matchFound = true
                     renderAsGuess = true
-                    println("We have a winner!!!")
                 } else {
-                    println("Not a match, check if is a word")
                     checkisWord = true
                 }
                 checkForMatch = false
@@ -288,12 +294,12 @@ fun ShowGameBoard(
                 WordlerAPI.getDictionaryDefinition(guess).also {
                     it.onSuccess {
                         // yes, show dictionary item and setup to move to next guess
-                        println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
+                        //println("${it[0].word}: ${it[0].meanings[0].definitions[0]}")
                         renderAsGuess = true
                     }
                     it.onFailure {
                         // not a word, let user know and continue to edit same guess
-                        println("sorry, not a word")
+                        showSnackBarMessage("Sorry, \"${guess}\" is not a word, please try again.")
                     }
                     checkisWord = false
                 }
@@ -306,7 +312,7 @@ fun ShowGameBoard(
             if (matchFound.not()) {
                 if (currentRow == 5) {
                     gameOverState = true
-                    println("GAME FINISHED - not match, sorry")
+                    showSnackBarMessage("GAME OVER: Sorry, you did not guess the word.")
                 } else {
                     // move to next guess line
                     // reset everything
@@ -316,7 +322,7 @@ fun ShowGameBoard(
                 }
             } else {
                 gameOverState = true
-                println("GAME FINISHED -- with a match")
+                showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
             }
         }
     }
@@ -388,7 +394,6 @@ fun ShowGameBoard(
             }
         }
     }
-    onComposeCnt(++composeCnt)
 }
 
 
