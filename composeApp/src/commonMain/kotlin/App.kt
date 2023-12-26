@@ -371,7 +371,7 @@ fun ShowGameBoard(
             ) {
                 Button({
                     if (loadWordDictionary.not()) {
-                        wordSelectionRow = ++wordSelectionRow % 6
+                        wordSelectionRow = ++wordSelectionRow % 3
                         if (wordSelectionRow == 0) {
                             loadWordDictionary = true
                         }
