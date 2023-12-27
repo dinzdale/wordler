@@ -173,6 +173,10 @@ fun ShowGameBoard(
 
     LaunchedEffect(resetGameBoard) {
         if (resetGameBoard) {
+            gameOverState = false
+            renderAsGuess = false
+            checkGameFinish = false
+            matchFound = false
             currentRow = 0
             currentColumn = 0
             keyDataUpdate[0] = KeyData(';', false, KeyType.ENTER)
@@ -191,6 +195,7 @@ fun ShowGameBoard(
             }
         }
         resetGameBoard = false
+
     }
 
     GetWordDictionary(loadWordDictionary) {
