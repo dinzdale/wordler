@@ -93,6 +93,8 @@ fun ShowGameBoard(
     var resetGameBoard by remember { mutableStateOf(false) }
     var resetKeyboard by remember { mutableStateOf(false) }
 
+    var hideWord by remember { mutableStateOf(true) }
+
     var currentGuess = remember {
         mutableStateListOf(
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
@@ -391,20 +393,33 @@ fun ShowGameBoard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button({
-                    if (loadWordDictionary.not()) {
-                        wordSelectionRow = ++wordSelectionRow % 3
-                        if (wordSelectionRow == 0) {
-                            loadWordDictionary = true
-                        }
-                    }
-                    resetKeyboard = true
+                    hideWord = hideWord.not()
                 }) {
-                    Text("new word")
+                    if (hideWord) {
+                        Text("show word")
+                    }
+                    else {
+                        Text("hide word")
+                    }
                 }
+                if (hideWord.not()) {
+                    Button({
+                        if (loadWordDictionary.not()) {
+                            wordSelectionRow = ++wordSelectionRow % 3
+                            if (wordSelectionRow == 0) {
+                                loadWordDictionary = true
+                            }
+                        }
+                        resetKeyboard = true
+                        hideWord = true
+                    }) {
+                        Text("new word")
+                    }
 
-                if (wordDictionary.isNotEmpty()) {
-                    wordDictionary[wordSelectionRow].also {
-                        Text(it.wordList.toString())
+                    if (wordDictionary.isNotEmpty()) {
+                        wordDictionary[wordSelectionRow].also {
+                            Text(it.wordList.toString())
+                        }
                     }
                 }
             }
