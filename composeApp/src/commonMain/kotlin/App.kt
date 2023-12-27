@@ -18,7 +18,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import gameboard.GameBoard
 import keyboard.KeyBoard
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
@@ -41,7 +39,6 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 import model.ui.game_pieces.WordDictionary
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import kotlin.time.Duration
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -54,9 +51,11 @@ fun ShowLayout() {
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
             var snackbarHostState = remember { SnackbarHostState() }
-            Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = { SnackbarHost(snackbarHostState) }) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                snackbarHost = { SnackbarHost(snackbarHostState) }) {
                 val scope = rememberCoroutineScope()
-                InitGame { message->
+                InitGame { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
                     }
@@ -67,7 +66,7 @@ fun ShowLayout() {
 }
 
 @Composable
-fun InitGame(showSnackBarMessage : (String)->Unit) {
+fun InitGame(showSnackBarMessage: (String) -> Unit) {
 
     ShowGameBoard(showSnackBarMessage)
 
@@ -174,13 +173,17 @@ fun ShowGameBoard(
         if (resetGameBoard) {
             currentRow = 0
             currentColumn = 0
+            keyDataUpdate[0] = KeyData(';', false, KeyType.ENTER)
+            for (column in 1..keyDataUpdate.lastIndex) {
+                keyDataUpdate[column] = KeyData('?')
+            }
             for (row in 0..currentGuess.lastIndex) {
                 for (column in 0..currentGuess[0].lastIndex) {
                     currentGuess[row][column] = '?'
                 }
             }
             for (row in 0..gameBoardState.lastIndex) {
-                for (column in 0 .. gameBoardState[0].lastIndex) {
+                for (column in 0..gameBoardState[0].lastIndex) {
                     gameBoardState[row][column] = TileData('X', TileKeyStatus.EMPTY)
                 }
             }

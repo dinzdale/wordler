@@ -81,30 +81,30 @@ fun KeyBoard(
             topRow.set(8, KeyData('O'))
             topRow.set(9, KeyData('P'))
             middleRow.set(0, KeyData('A'))
-            middleRow.set(0, KeyData('S'))
-            middleRow.set(1, KeyData('D'))
-            middleRow.set(2, KeyData('F'))
-            middleRow.set(3, KeyData('G'))
-            middleRow.set(4, KeyData('H'))
-            middleRow.set(5, KeyData('J'))
-            middleRow.set(6, KeyData('K'))
-            middleRow.set(7, KeyData('L'))
+            middleRow.set(1, KeyData('S'))
+            middleRow.set(2, KeyData('D'))
+            middleRow.set(3, KeyData('F'))
+            middleRow.set(4, KeyData('G'))
+            middleRow.set(5, KeyData('H'))
+            middleRow.set(6, KeyData('J'))
+            middleRow.set(7, KeyData('K'))
+            middleRow.set(8, KeyData('L'))
             bottomRow.set(0, KeyData('?', enabled = false, KeyType.ENTER))
             bottomRow.set(1, KeyData('Z'))
-            bottomRow.set(1, KeyData('X'))
-            bottomRow.set(2, KeyData('C'))
-            bottomRow.set(3, KeyData('V'))
-            bottomRow.set(4, KeyData('B'))
-            bottomRow.set(5, KeyData('N'))
-            bottomRow.set(6, KeyData('M'))
-            bottomRow.set(7, KeyData('!', keyType = KeyType.DELETE))
+            bottomRow.set(2, KeyData('X'))
+            bottomRow.set(3, KeyData('C'))
+            bottomRow.set(4, KeyData('V'))
+            bottomRow.set(5, KeyData('B'))
+            bottomRow.set(6, KeyData('N'))
+            bottomRow.set(7, KeyData('M'))
+            bottomRow.set(8, KeyData('!', keyType = KeyType.DELETE))
             onResetKeyboardComplete()
         }
     }
     LaunchedEffect(keyDataUpdate) {
         if (keyDataUpdate.isNotEmpty()) {
             keyDataUpdate.forEach { nxtKeyData ->
-                nxtKeyData.keyType?.also { keyType ->
+                nxtKeyData.keyType.also { keyType ->
                     when (keyType) {
                         KeyType.ALPHA -> {
                             var index = topRow.indexOfFirst { it.char == nxtKeyData.char }
