@@ -7,6 +7,7 @@ import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import model.DictionaryItem
 
+
 object WordlerAPI {
     private val client by lazy {
         HttpClient {
@@ -19,7 +20,7 @@ object WordlerAPI {
     suspend fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
         return try {
             Result.success(client.get(
-                "https://random-word-api.herokuapp.com/word?number=${noWords}&length=${length}")
+                getWordsVercelURL(noWords,length))
                 .body())
         } catch (ex: Exception) {
             Result.failure(ex)
@@ -35,4 +36,6 @@ object WordlerAPI {
         }
     }
 
+    private fun getWordsHeroKuapp(noWords: Int, length: Int) = "https://random-word-api.herokuapp.com/word?number=${noWords}&length=${length}"
+    private fun getWordsVercelURL(noWords: Int, length: Int) = "https://random-word-api.vercel.app/api?words=${noWords}&length=${length}"
 }
