@@ -26,9 +26,9 @@ fun Tile(angle: Float, tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)) 
         previousTile = tileData
     }
     if (angle <= 90f) {
-        RenderTile(angle, angle, previousTile)
+        RenderTile(angle, previousTile)
     } else {
-        RenderTile(angle, 180f, tileData)
+        RenderTile(angle, tileData)
     }
 //    Box(
 //        Modifier
@@ -48,7 +48,7 @@ fun Tile(angle: Float, tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)) 
 }
 
 @Composable
-private fun RenderTile(angle: Float, textAngle: Float, tileData: TileData) {
+private fun RenderTile(angle: Float, tileData: TileData) {
     val (background, foreground) = PieceColor.getColor(tileData)
     Box(
         Modifier
@@ -64,7 +64,7 @@ private fun RenderTile(angle: Float, textAngle: Float, tileData: TileData) {
             color = foreground,
             style = TextStyle(fontSize = 38.sp),
             modifier = Modifier.graphicsLayer {
-                rotationY = textAngle
+                rotationY = angle
             }
         )
     }
