@@ -30,21 +30,6 @@ fun Tile(angle: Float, tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)) 
     } else {
         RenderTile(angle, tileData)
     }
-//    Box(
-//        Modifier
-//            .graphicsLayer {
-//                rotationY = angle
-//            }
-//            .background(color = PieceColor.getColor(tileData).backGround)
-//            .size(size = 70.dp),
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Text(
-//            tileData.char.toString(),
-//            color = PieceColor.getColor(tileData).foreGround,
-//            style = TextStyle(fontSize = 38.sp)
-//        )
-//    }
 }
 
 @Composable
