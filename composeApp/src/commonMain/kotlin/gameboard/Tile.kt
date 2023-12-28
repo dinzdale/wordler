@@ -3,10 +3,13 @@ package gameboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -15,10 +18,12 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 
 @Composable
-fun Tile(tileData: TileData = TileData('Q',TileKeyStatus.EMPTY)) {
-//    var tiledata by remember { mutableStateOf(tileData) }
+fun Tile(angle:Float,tileData: TileData = TileData('Q',TileKeyStatus.EMPTY)) {
     Box(
         Modifier
+            .graphicsLayer {
+                rotationY = angle
+            }
             .background(color = PieceColor.getColor(tileData).backGround)
             .size(size = 70.dp),
         contentAlignment = Alignment.Center
