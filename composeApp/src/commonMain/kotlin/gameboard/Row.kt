@@ -30,7 +30,7 @@ fun TileRow(
         LaunchedEffect(doList) {
             doList.forEachIndexed { index, value ->
                 if (value) {
-                    animate(0f, 180f, animationSpec = tween(1000)) { nxtVal, _ ->
+                    animate(0f, 180f, animationSpec = tween(750)) { nxtVal, _ ->
                         angleStates[index] = nxtVal
                     }
                 }
