@@ -1,6 +1,5 @@
 package gameboard
 
-//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -65,7 +64,6 @@ fun TileRow(
 
 }
 
-
 @Composable
 private fun animateState(rowData: RowData) = produceState(
     listOf(false, false, false, false, false),
@@ -83,12 +81,3 @@ private fun animateState(rowData: RowData) = produceState(
     value = listOfMatches.toList()
 }
 
-//@Composable
-//@Preview
-//fun PreviewRow() {
-//    MaterialTheme {
-//        Surface(Modifier.wrapContentSize()) {
-//            TileRow()
-//        }
-//    }
-//}
