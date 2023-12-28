@@ -28,6 +28,9 @@ fun TileRow(
     @Composable
     fun AnimateTiles(doList: List<Boolean> = animateState(rowData).value) {
         LaunchedEffect(doList) {
+            for (i in 0..angleStates.lastIndex) {
+                angleStates[i] = 0f
+            }
             doList.forEachIndexed { index, value ->
                 if (value) {
                     animate(0f, 180f, animationSpec = tween(750)) { nxtVal, _ ->
