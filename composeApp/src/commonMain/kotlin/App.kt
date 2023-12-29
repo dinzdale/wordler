@@ -233,7 +233,6 @@ fun ShowGameBoard(
                         add(i, GuessHit(wordDictionary[wordSelectionRow].wordList[i], false))
                     }
                 }
-
                 for (column in 0..guess.lastIndex) {
                     if (guessHits[column].char == guess[column]) {
                         guessHits[column].found = true
@@ -245,8 +244,6 @@ fun ShowGameBoard(
                                     KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
                             }
                         }
-//                        keyDataUpdate[column] =
-//                            KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
                     } else {
                         guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
                             it.found = true
@@ -261,26 +258,6 @@ fun ShowGameBoard(
                                         )
                                 }
                             }
-                            // check if this guess previously marked on keyboard and matched
-//                            gameBoardState.flatMap {
-//                                val boolList = mutableListOf<Boolean>()
-//                                it.forEachIndexed { index, tileData ->
-//                                    boolList.add(
-//                                        index,
-//                                        tileData.char == guess[column] && tileData.status == TileKeyStatus.MATCH_IN_POSITION
-//                                    )
-//                                }
-//                                boolList
-//                            }.contains(true).not().also {
-//                                if (it) {
-//                                    keyDataUpdate[column] =
-//                                        KeyData(
-//                                            guess[column],
-//                                            status = TileKeyStatus.MATCH_OUT_POSITION
-//                                        )
-//                                }
-//                            }
-
                         } ?: run {
                             gameBoardState[currentRow][column] =
                                 TileData(guess[column], TileKeyStatus.SELECTED)
@@ -290,14 +267,11 @@ fun ShowGameBoard(
                                         KeyData(guess[column], status = TileKeyStatus.SELECTED)
                                 }
                             }
-//                            keyDataUpdate[column] =
-//                                KeyData(guess[column], status = TileKeyStatus.SELECTED)
                         }
                     }
                 }
 
             } else {
-                //restKeyboard = true
                 for (column in 0..guess.lastIndex) {
                     if (guess[column] == '?') {
                         gameBoardState[currentRow][column] =
