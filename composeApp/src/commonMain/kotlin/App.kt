@@ -203,6 +203,21 @@ fun ShowGameBoard(
         wordDictionary.removeAll { true }
         wordDictionary.addAll(it)
     }
+    @Composable
+    fun CheckGameboardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
+        gameBoardState.flatMap {
+            val boolList = mutableListOf<Boolean>()
+            it.forEachIndexed { index, tileData ->
+                boolList.add(
+                    index,
+                    tileData.char == guess && tileData.status == TileKeyStatus.MATCH_IN_POSITION
+                )
+            }
+            boolList
+        }.contains(true).also {
+            onResult(it)
+        }
+    }
 
     @Composable
     fun UpdateTiles(
@@ -224,25 +239,21 @@ fun ShowGameBoard(
                         guessHits[column].found = true
                         gameBoardState[currentRow][column] =
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
-                        keyDataUpdate[column] =
-                            KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
+                        CheckGameboardHasMatch(guess[column]) {
+                            if (it) {
+                                keyDataUpdate[column] =
+                                    KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
+                            }
+                        }
+//                        keyDataUpdate[column] =
+//                            KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
                     } else {
                         guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
                             it.found = true
                             gameBoardState[currentRow][column] =
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
-                            // check if this guess previously marked on keyboard and matched
-                            gameBoardState.flatMap {
-                                val boolList = mutableListOf<Boolean>()
-                                it.forEachIndexed { index, tileData ->
-                                    boolList.add(
-                                        index,
-                                        tileData.char == guess[column] && tileData.status == TileKeyStatus.MATCH_IN_POSITION
-                                    )
-                                }
-                                boolList
-                            }.contains(true).not().also {
-                                if (it) {
+                            CheckGameboardHasMatch(guess[column]) {
+                                if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(
                                             guess[column],
@@ -250,12 +261,37 @@ fun ShowGameBoard(
                                         )
                                 }
                             }
+                            // check if this guess previously marked on keyboard and matched
+//                            gameBoardState.flatMap {
+//                                val boolList = mutableListOf<Boolean>()
+//                                it.forEachIndexed { index, tileData ->
+//                                    boolList.add(
+//                                        index,
+//                                        tileData.char == guess[column] && tileData.status == TileKeyStatus.MATCH_IN_POSITION
+//                                    )
+//                                }
+//                                boolList
+//                            }.contains(true).not().also {
+//                                if (it) {
+//                                    keyDataUpdate[column] =
+//                                        KeyData(
+//                                            guess[column],
+//                                            status = TileKeyStatus.MATCH_OUT_POSITION
+//                                        )
+//                                }
+//                            }
 
                         } ?: run {
                             gameBoardState[currentRow][column] =
                                 TileData(guess[column], TileKeyStatus.SELECTED)
-                            keyDataUpdate[column] =
-                                KeyData(guess[column], status = TileKeyStatus.SELECTED)
+                            CheckGameboardHasMatch(guess[column]) {
+                                if (it.not()) {
+                                    keyDataUpdate[column] =
+                                        KeyData(guess[column], status = TileKeyStatus.SELECTED)
+                                }
+                            }
+//                            keyDataUpdate[column] =
+//                                KeyData(guess[column], status = TileKeyStatus.SELECTED)
                         }
                     }
                 }
@@ -276,6 +312,7 @@ fun ShowGameBoard(
             onRenderCompleted(asGuess)
         }
     }
+
 
     @Composable
     fun UpdateEnterKey(isEnabled: Boolean = allowGuess(currentGuess[currentRow][4]).value) {
