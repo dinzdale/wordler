@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.RowData
 
 @Composable
-fun GameBoard(rows: List<RowData>) {
+fun GameBoard(rows: List<RowData>, onRowUpdateFinish: () -> Unit) {
     Column(
         Modifier
             .wrapContentSize()
@@ -23,7 +23,7 @@ fun GameBoard(rows: List<RowData>) {
     ) {
         Spacer(Modifier.height(5.dp))
         rows.forEach { rowData ->
-            TileRow(rowData)
+            TileRow(rowData,onRowUpdateFinish)
             Spacer(Modifier.height(5.dp))
         }
     }

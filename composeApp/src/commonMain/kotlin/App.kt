@@ -92,6 +92,7 @@ fun ShowGameBoard(
 
     var resetGameBoard by remember { mutableStateOf(false) }
     var resetKeyboard by remember { mutableStateOf(false) }
+    var rowUpdateFinish by remember { mutableStateOf(false) }
 
     var hideWord by remember { mutableStateOf(true) }
 
@@ -176,6 +177,7 @@ fun ShowGameBoard(
             gameOverState = false
             renderAsGuess = false
             checkGameFinish = false
+            rowUpdateFinish = false
             matchFound = false
             currentRow = 0
             currentColumn = 0
@@ -354,9 +356,10 @@ fun ShowGameBoard(
             }
         }
     }
-    LaunchedEffect(checkGameFinish) {
-        if (checkGameFinish) {
+    LaunchedEffect(checkGameFinish, rowUpdateFinish) {
+        if (checkGameFinish && rowUpdateFinish) {
             checkGameFinish = false
+            rowUpdateFinish = false
             if (matchFound.not()) {
                 if (currentRow == 5) {
                     gameOverState = true
@@ -381,7 +384,9 @@ fun ShowGameBoard(
         if (gameBoardState.isNotEmpty()) {
             GameBoard(gameBoardState.mapIndexed() { index, titleDataList ->
                 RowData(rowPosition = index, tileData = titleDataList)
-            })
+            }) {
+                rowUpdateFinish = renderAsGuess
+            }
         }
         Column(Modifier.align(Alignment.BottomCenter)) {
             KeyBoard(
