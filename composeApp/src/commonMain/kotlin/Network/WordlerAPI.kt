@@ -27,15 +27,24 @@ object WordlerAPI {
         }
     }
 
+//    suspend fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
+//        return Result.success(listOf("await", "smell", "silly"))
+//    }
+
+
     suspend fun getDictionaryDefinition(word: String): Result<List<DictionaryItem>> {
         return try {
             Result.success(
-                client.get("https://api.dictionaryapi.dev/api/v2/entries/en/$word").body())
+                client.get("https://api.dictionaryapi.dev/api/v2/entries/en/$word").body()
+            )
         } catch (ex: Exception) {
             Result.failure(ex)
         }
     }
 
-    private fun getWordsHeroKuapp(noWords: Int, length: Int) = "https://random-word-api.herokuapp.com/word?number=${noWords}&length=${length}"
-    private fun getWordsVercelURL(noWords: Int, length: Int) = "https://random-word-api.vercel.app/api?words=${noWords}&length=${length}"
+    private fun getWordsHeroKuapp(noWords: Int, length: Int) =
+        "https://random-word-api.herokuapp.com/word?number=${noWords}&length=${length}"
+
+    private fun getWordsVercelURL(noWords: Int, length: Int) =
+        "https://random-word-api.vercel.app/api?words=${noWords}&length=${length}"
 }

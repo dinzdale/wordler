@@ -220,7 +220,7 @@ fun ShowGameBoard(
                 }
 
                 for (column in 0..guess.lastIndex) {
-                    if (guessHits[column].char == guess[column] && guessHits[column].found.not()) {
+                    if (guessHits[column].char == guess[column]) {
                         guessHits[column].found = true
                         gameBoardState[currentRow][column] =
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
@@ -231,8 +231,26 @@ fun ShowGameBoard(
                             it.found = true
                             gameBoardState[currentRow][column] =
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
-                            keyDataUpdate[column] =
-                                KeyData(guess[column], status = TileKeyStatus.MATCH_OUT_POSITION)
+                            // check if this guess previously marked on keyboard and matched
+                            gameBoardState.flatMap {
+                                val boolList = mutableListOf<Boolean>()
+                                it.forEachIndexed { index, tileData ->
+                                    boolList.add(
+                                        index,
+                                        tileData.char == guess[column] && tileData.status == TileKeyStatus.MATCH_IN_POSITION
+                                    )
+                                }
+                                boolList
+                            }.contains(true).not().also {
+                                if (it) {
+                                    keyDataUpdate[column] =
+                                        KeyData(
+                                            guess[column],
+                                            status = TileKeyStatus.MATCH_OUT_POSITION
+                                        )
+                                }
+                            }
+
                         } ?: run {
                             gameBoardState[currentRow][column] =
                                 TileData(guess[column], TileKeyStatus.SELECTED)
@@ -402,8 +420,7 @@ fun ShowGameBoard(
                 }) {
                     if (hideWord) {
                         Text("show word")
-                    }
-                    else {
+                    } else {
                         Text("hide word")
                     }
                 }
