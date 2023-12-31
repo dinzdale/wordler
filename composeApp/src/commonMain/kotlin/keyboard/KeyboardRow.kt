@@ -3,6 +3,7 @@ package keyboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
@@ -15,7 +16,7 @@ import model.ui.game_pieces.KeyData
 
 @Composable
 fun KeyBoardRow(keyList: List<KeyData>, onKeySelected: (KeyData)->Unit) {
-    Row(Modifier.wrapContentSize(),horizontalArrangement = Arrangement.SpaceAround) {
+    Row(Modifier.fillMaxSize(),horizontalArrangement = Arrangement.SpaceAround) {
         keyList.forEach {
             Key(it,onKeySelected)
             Spacer(Modifier.width(3.dp))

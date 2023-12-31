@@ -4,6 +4,7 @@ package keyboard
 //import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -159,7 +160,7 @@ fun KeyBoard(
     Column(
         modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .fillMaxHeight(.25f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         KeyBoardRow(topRow, onSelectedKey)

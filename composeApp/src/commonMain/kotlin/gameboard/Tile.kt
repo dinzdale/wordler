@@ -2,7 +2,15 @@ package gameboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,34 +28,35 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 
 @Composable
-fun Tile(angle: Float, tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)) {
+fun Tile(modifier: Modifier, angle: Float, tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)) {
     var previousTile by remember { mutableStateOf(tileData) }
     if (tileData.status != TileKeyStatus.MATCH_OUT_POSITION && tileData.status != TileKeyStatus.MATCH_IN_POSITION) {
         previousTile = tileData
     }
     if (angle <= 90f) {
-        RenderTile(angle, previousTile)
+        RenderTile(modifier, angle, previousTile)
     } else {
-        RenderTile(angle, tileData)
+        RenderTile(modifier, angle, tileData)
     }
 }
 
 @Composable
-private fun RenderTile(angle: Float, tileData: TileData) {
+private fun RenderTile(modifier: Modifier, angle: Float, tileData: TileData) {
     val (background, foreground) = PieceColor.getColor(tileData)
     Box(
-        Modifier
+        modifier
             .graphicsLayer {
                 rotationY = angle
             }
             .background(color = background)
-            .size(size = 70.dp),
+            .sizeIn(minHeight = 30.dp).aspectRatio(1.33f,matchHeightConstraintsFirst = true),
+
         contentAlignment = Alignment.Center
     ) {
         Text(
             tileData.char.toString(),
             color = foreground,
-            style = TextStyle(fontSize = 38.sp),
+            style = TextStyle(fontSize = 30.sp),
             modifier = Modifier.graphicsLayer {
                 rotationY = angle
             }
