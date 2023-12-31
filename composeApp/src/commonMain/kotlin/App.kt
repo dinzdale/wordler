@@ -390,7 +390,7 @@ fun ShowGameBoard(
             GameBoard(Modifier.fillMaxSize(33f),gameBoardState.mapIndexed() { index, titleDataList ->
                 RowData(rowPosition = index, tileData = titleDataList)
             }) {
-                rowUpdateFinish = renderAsGuess
+                rowUpdateFinish = true
             }
         }
         Column(Modifier.align(Alignment.BottomCenter)) {
