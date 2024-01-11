@@ -27,7 +27,7 @@ import model.ui.game_pieces.TileKeyStatus
 @Composable
 fun TileRow(
     rowData: RowData,
-    onRowUpdateFinish: () -> Unit
+    onRowUpdateFinish: (Boolean) -> Unit
 ) {
     var angleStates = remember { mutableStateListOf(0f, 0f, 0f, 0f, 0f) }
 
@@ -44,7 +44,7 @@ fun TileRow(
                     }
                 }
             }
-            onRowUpdateFinish()
+            onRowUpdateFinish(rowData.tileData.filter { it.status == TileKeyStatus.MATCH_IN_POSITION }.count() == rowData.tileData.size)
         }
     }
     AnimateTiles()

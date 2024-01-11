@@ -1,13 +1,10 @@
 import Network.WordlerAPI
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,8 +27,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import gameboard.GameBoard
 import keyboard.KeyBoard
 import kotlinx.coroutines.launch
@@ -97,7 +92,7 @@ fun ShowGameBoard(
 
     var resetGameBoard by remember { mutableStateOf(false) }
     var resetKeyboard by remember { mutableStateOf(false) }
-    var rowUpdateFinish by remember { mutableStateOf(false) }
+    var rowUpdatedAllMatches by remember { mutableStateOf(false) }
 
     var hideWord by remember { mutableStateOf(true) }
 
@@ -182,7 +177,7 @@ fun ShowGameBoard(
             gameOverState = false
             renderAsGuess = false
             checkGameFinish = false
-            rowUpdateFinish = false
+            rowUpdatedAllMatches = false
             matchFound = false
             currentRow = 0
             currentColumn = 0
@@ -361,10 +356,9 @@ fun ShowGameBoard(
             }
         }
     }
-    LaunchedEffect(checkGameFinish, rowUpdateFinish) {
-        if (checkGameFinish && rowUpdateFinish) {
+    LaunchedEffect(checkGameFinish, rowUpdatedAllMatches) {
+        if (checkGameFinish) {
             checkGameFinish = false
-            rowUpdateFinish = false
             if (matchFound.not()) {
                 if (currentRow == 5) {
                     gameOverState = true
@@ -378,7 +372,10 @@ fun ShowGameBoard(
                 }
             } else {
                 gameOverState = true
-                showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
+                if (rowUpdatedAllMatches) {
+                    showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
+                    rowUpdatedAllMatches = false
+                }
             }
         }
     }
@@ -390,7 +387,7 @@ fun ShowGameBoard(
             GameBoard(Modifier.fillMaxSize(33f),gameBoardState.mapIndexed() { index, titleDataList ->
                 RowData(rowPosition = index, tileData = titleDataList)
             }) {
-                rowUpdateFinish = true
+                rowUpdatedAllMatches = it
             }
         }
         Column(Modifier.align(Alignment.BottomCenter)) {

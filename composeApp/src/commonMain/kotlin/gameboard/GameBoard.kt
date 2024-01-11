@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.RowData
 
 @Composable
-fun GameBoard(modifier: Modifier,rows: List<RowData>, onRowUpdateFinish: () -> Unit) {
+fun GameBoard(modifier: Modifier,rows: List<RowData>, onRowUpdateFinish: (Boolean) -> Unit) {
     Column(
         modifier
             .fillMaxSize()

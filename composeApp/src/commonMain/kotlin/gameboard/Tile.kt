@@ -1,18 +1,15 @@
 package gameboard
 
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,28 +25,57 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 
 @Composable
-fun Tile(modifier: Modifier, angle: Float, tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)) {
+fun Tile(
+    modifier: Modifier,
+    angle: Float,
+    tileData: TileData = TileData('Q', TileKeyStatus.EMPTY)
+) {
     var previousTile by remember { mutableStateOf(tileData) }
+
     if (tileData.status != TileKeyStatus.MATCH_OUT_POSITION && tileData.status != TileKeyStatus.MATCH_IN_POSITION) {
         previousTile = tileData
     }
-    if (angle <= 90f) {
-        RenderTile(modifier, angle, previousTile)
-    } else {
-        RenderTile(modifier, angle, tileData)
+    when (tileData.status) {
+        TileKeyStatus.MATCH_OUT_POSITION, TileKeyStatus.MATCH_IN_POSITION -> {
+            if (angle <= 90f) {
+                RenderTile(modifier, angle = angle, tileData = previousTile)
+            } else {
+                RenderTile(modifier, angle = angle, tileData = tileData)
+            }
+        }
+
+        TileKeyStatus.NO_MATCH -> {
+            var scaleState by remember { mutableStateOf(1f) }
+            LaunchedEffect(Unit) {
+                animate(1f, .5f, 3f) { scale, _ ->
+                    scaleState = scale
+                }
+                animate(.5f, 1f) { scale, _ ->
+                    scaleState = scale
+                }
+            }
+            RenderTile(modifier, scale = scaleState, angle = angle, tileData = previousTile)
+        }
+
+        else -> {
+            RenderTile(modifier, angle = angle, tileData = previousTile)
+        }
     }
+
 }
 
 @Composable
-private fun RenderTile(modifier: Modifier, angle: Float, tileData: TileData) {
+private fun RenderTile(modifier: Modifier, scale: Float = 1f, angle: Float, tileData: TileData) {
     val (background, foreground) = PieceColor.getColor(tileData)
     Box(
         modifier
             .graphicsLayer {
                 rotationY = angle
+                scaleX = scale
+                scaleY = scale
             }
             .background(color = background)
-            .sizeIn(minHeight = 30.dp).aspectRatio(1.33f,matchHeightConstraintsFirst = true),
+            .sizeIn(minHeight = 30.dp).aspectRatio(1.33f, matchHeightConstraintsFirst = true),
 
         contentAlignment = Alignment.Center
     ) {
