@@ -46,9 +46,12 @@ fun App() {
     ShowLayout()
 }
 
+
+
 @Composable
 fun ShowLayout() {
     MaterialTheme {
+
         Surface(modifier = Modifier.fillMaxSize()) {
             var snackbarHostState = remember { SnackbarHostState() }
             Scaffold(
@@ -68,13 +71,13 @@ fun ShowLayout() {
 @Composable
 fun InitGame(showSnackBarMessage: (String) -> Unit) {
 
-    ShowGameBoard(showSnackBarMessage)
+    GameBoardLayout(showSnackBarMessage)
 
 }
 
 
 @Composable
-fun ShowGameBoard(
+fun GameBoardLayout(
     showSnackBarMessage: (String) -> Unit,
 ) {
 
@@ -93,6 +96,9 @@ fun ShowGameBoard(
     var resetGameBoard by remember { mutableStateOf(false) }
     var resetKeyboard by remember { mutableStateOf(false) }
     var rowUpdatedAllMatches by remember { mutableStateOf(false) }
+
+
+
 
     var hideWord by remember { mutableStateOf(true) }
 
@@ -115,19 +121,30 @@ fun ShowGameBoard(
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY)
             ),
-            mutableStateListOf(
+
+
+
+         mutableStateListOf(
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY)
             ),
-            mutableStateListOf(
+
+
+         mutableStateListOf(
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
+
+
+
+
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY)
+
+
             ),
             mutableStateListOf(
                 TileData('X', TileKeyStatus.EMPTY),
