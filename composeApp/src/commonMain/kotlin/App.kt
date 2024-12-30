@@ -89,7 +89,7 @@ fun GameBoardLayout(
     var renderAsGuess by remember { mutableStateOf(false) }
     var checkForMatch by remember { mutableStateOf(false) }
     var matchFound by remember { mutableStateOf(false) }
-    var checkisWord by remember { mutableStateOf(false) }
+    var checkIsWord by remember { mutableStateOf(false) }
     var checkGameFinish by remember { mutableStateOf(false) }
     var gameOverState by remember { mutableStateOf(false) }
 
@@ -137,14 +137,8 @@ fun GameBoardLayout(
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
-
-
-
-
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY)
-
-
             ),
             mutableStateListOf(
                 TileData('X', TileKeyStatus.EMPTY),
@@ -349,14 +343,14 @@ fun GameBoardLayout(
                     matchFound = true
                     renderAsGuess = true
                 } else {
-                    checkisWord = true
+                    checkIsWord = true
                 }
                 checkForMatch = false
             }
         }
         // Verify if guess is valid word
-        LaunchedEffect(checkisWord) {
-            if (checkisWord) {
+        LaunchedEffect(checkIsWord) {
+            if (checkIsWord) {
                 val guess = currentGuess[currentRow].joinToString("")
                 WordlerAPI.getDictionaryDefinition(guess).also {
                     it.onSuccess {
@@ -368,14 +362,14 @@ fun GameBoardLayout(
                         // not a word, let user know and continue to edit same guess
                         showSnackBarMessage("Sorry, \"${guess}\" is not a word, please try again.")
                     }
-                    checkisWord = false
+                    checkIsWord = false
                 }
             }
         }
     }
     LaunchedEffect(checkGameFinish, rowUpdatedAllMatches) {
         if (checkGameFinish) {
-            checkGameFinish = false
+
             if (matchFound.not()) {
                 if (currentRow == 5) {
                     gameOverState = true
@@ -391,6 +385,7 @@ fun GameBoardLayout(
                 gameOverState = true
                 if (rowUpdatedAllMatches) {
                     showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
+                    checkGameFinish = false
                     rowUpdatedAllMatches = false
                 }
             }
