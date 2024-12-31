@@ -18,6 +18,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -109,56 +110,41 @@ fun GameBoardLayout(
             mutableStateListOf<Char>('?', '?', '?', '?', '?')
         )
     }
-    var gameBoardState = remember {
-        mutableStateListOf(
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-
-
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-
-
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            )
+    val gameBoardState = remember {
+        mapOf(0 to
+                mutableStateListOf<TileData>().apply {
+                    IntRange(0, 4).forEach {
+                        add(TileData('X', TileKeyStatus.EMPTY))
+                    }
+                    1 to mutableStateListOf<TileData>().apply {
+                        IntRange(0, 4).forEach {
+                            add(TileData('X', TileKeyStatus.EMPTY))
+                        }
+                    },
+                },
+            1 to mutableStateListOf<TileData>().apply {
+                IntRange(0, 4).forEach {
+                    add(TileData('X', TileKeyStatus.EMPTY))
+                }
+            },
+            2 to mutableStateListOf<TileData>().apply {
+                IntRange(0, 4).forEach {
+                    add(TileData('X', TileKeyStatus.EMPTY))
+                }
+            },
+            3 to mutableStateListOf<TileData>().apply {
+                IntRange(0, 4).forEach {
+                    add(TileData('X', TileKeyStatus.EMPTY))
+                }
+            },
+            4 to mutableStateListOf<TileData>().apply {
+                IntRange(0, 4).forEach {
+                    add(TileData('X', TileKeyStatus.EMPTY))
+                }
+            }
         )
     }
+    
     var keyDataUpdate = remember {
         mutableStateListOf(
             KeyData(
@@ -175,7 +161,7 @@ fun GameBoardLayout(
     }
     var loadWordDictionary by remember { mutableStateOf(true) }
 
-
+lastIndex
     var scrollState = rememberScrollState()
 
 
@@ -200,6 +186,20 @@ fun GameBoardLayout(
                     currentGuess[row][column] = '?'
                 }
             }
+            gameBoardState.values.forEachIndexed { row, tileData ->  }
+            IntRange(0,gameBoardState.size).forEach { row ->
+                
+                IntRange(0, gameBoardState[row]?.lastIndex?:0 ) { column ->
+                    gameBoardState[row, column] = TileData('X', TileKeyStatus.EMPTY)
+
+                }
+            }
+                IntRange(0,gameBoardState[0]?.size).forEach { 
+                    
+                }
+                
+            }
+            
             for (row in 0..gameBoardState.lastIndex) {
                 for (column in 0..gameBoardState[0].lastIndex) {
                     gameBoardState[row][column] = TileData('X', TileKeyStatus.EMPTY)
