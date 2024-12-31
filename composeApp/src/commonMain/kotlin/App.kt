@@ -186,7 +186,9 @@ lastIndex
                     currentGuess[row][column] = '?'
                 }
             }
-            gameBoardState.values.forEachIndexed { row, tileData ->  }
+            gameBoardState.values.forEach {
+                it.
+            }
             IntRange(0,gameBoardState.size).forEach { row ->
                 
                 IntRange(0, gameBoardState[row]?.lastIndex?:0 ) { column ->
