@@ -47,7 +47,6 @@ fun App() {
 }
 
 
-
 @Composable
 fun ShowLayout() {
     MaterialTheme {
@@ -98,8 +97,6 @@ fun GameBoardLayout(
     var rowUpdatedAllMatches by remember { mutableStateOf(false) }
 
 
-
-
     var hideWord by remember { mutableStateOf(true) }
 
     var currentGuess = remember {
@@ -123,8 +120,7 @@ fun GameBoardLayout(
             ),
 
 
-
-         mutableStateListOf(
+            mutableStateListOf(
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
@@ -133,7 +129,7 @@ fun GameBoardLayout(
             ),
 
 
-         mutableStateListOf(
+            mutableStateListOf(
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
                 TileData('X', TileKeyStatus.EMPTY),
@@ -192,6 +188,9 @@ fun GameBoardLayout(
             matchFound = false
             currentRow = 0
             currentColumn = 0
+
+
+
             keyDataUpdate[0] = KeyData(';', false, KeyType.ENTER)
             for (column in 1..keyDataUpdate.lastIndex) {
                 keyDataUpdate[column] = KeyData('?')
@@ -228,6 +227,8 @@ fun GameBoardLayout(
             }
             boolList
         }.contains(true).also {
+
+
             onResult(it)
         }
     }
@@ -369,7 +370,7 @@ fun GameBoardLayout(
     }
     LaunchedEffect(checkGameFinish, rowUpdatedAllMatches) {
         if (checkGameFinish) {
-
+            checkGameFinish = false
             if (matchFound.not()) {
                 if (currentRow == 5) {
                     gameOverState = true
@@ -381,13 +382,13 @@ fun GameBoardLayout(
                     currentColumn = 0
                     ++currentRow
                 }
-            } else {
-                gameOverState = true
-                if (rowUpdatedAllMatches) {
-                    showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
-                    checkGameFinish = false
-                    rowUpdatedAllMatches = false
-                }
+            }
+        }
+        if (rowUpdatedAllMatches) {
+            gameOverState = true
+            if (rowUpdatedAllMatches) {
+                showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
+                rowUpdatedAllMatches = false
             }
         }
     }
@@ -396,9 +397,11 @@ fun GameBoardLayout(
         contentAlignment = Alignment.TopCenter
     ) {
         if (gameBoardState.isNotEmpty()) {
-            GameBoard(Modifier.fillMaxSize(33f),gameBoardState.mapIndexed() { index, titleDataList ->
-                RowData(rowPosition = index, tileData = titleDataList)
-            }) {
+            GameBoard(
+                Modifier.fillMaxSize(33f),
+                gameBoardState.mapIndexed() { index, titleDataList ->
+                    RowData(rowPosition = index, tileData = titleDataList)
+                }) {
                 rowUpdatedAllMatches = it
             }
         }
