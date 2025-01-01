@@ -27,14 +27,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import gameboard.CheckGameBoardHasMatch
 import gameboard.GameBoard
+import gameboard.getRowData
+import gameboard.initGameBoardStates
+import gameboard.isKeyBoardStateInitialized
+import gameboard.setTileData
 import keyboard.KeyBoard
 import kotlinx.coroutines.launch
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
 import model.ui.game_pieces.KeyData
 import model.ui.game_pieces.KeyType
-import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 import model.ui.game_pieces.WordDictionary
@@ -100,7 +104,7 @@ fun GameBoardLayout(
     var hideWord by remember { mutableStateOf(true) }
 
     var currentGuess = remember {
-        mutableStateListOf(
+        listOf(
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
@@ -109,56 +113,8 @@ fun GameBoardLayout(
             mutableStateListOf<Char>('?', '?', '?', '?', '?')
         )
     }
-    var gameBoardState = remember {
-        mutableStateListOf(
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
 
 
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-
-
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            ),
-            mutableStateListOf(
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY),
-                TileData('X', TileKeyStatus.EMPTY)
-            )
-        )
-    }
     var keyDataUpdate = remember {
         mutableStateListOf(
             KeyData(
@@ -175,7 +131,6 @@ fun GameBoardLayout(
     }
     var loadWordDictionary by remember { mutableStateOf(true) }
 
-
     var scrollState = rememberScrollState()
 
 
@@ -189,8 +144,6 @@ fun GameBoardLayout(
             currentRow = 0
             currentColumn = 0
 
-
-
             keyDataUpdate[0] = KeyData(';', false, KeyType.ENTER)
             for (column in 1..keyDataUpdate.lastIndex) {
                 keyDataUpdate[column] = KeyData('?')
@@ -200,11 +153,9 @@ fun GameBoardLayout(
                     currentGuess[row][column] = '?'
                 }
             }
-            for (row in 0..gameBoardState.lastIndex) {
-                for (column in 0..gameBoardState[0].lastIndex) {
-                    gameBoardState[row][column] = TileData('X', TileKeyStatus.EMPTY)
-                }
-            }
+
+            initGameBoardStates()
+
         }
         resetGameBoard = false
 
@@ -215,23 +166,7 @@ fun GameBoardLayout(
         wordDictionary.removeAll { true }
         wordDictionary.addAll(it)
     }
-    @Composable
-    fun CheckGameboardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
-        gameBoardState.flatMap {
-            val boolList = mutableListOf<Boolean>()
-            it.forEachIndexed { index, tileData ->
-                boolList.add(
-                    index,
-                    tileData.char == guess && tileData.status == TileKeyStatus.MATCH_IN_POSITION
-                )
-            }
-            boolList
-        }.contains(true).also {
 
-
-            onResult(it)
-        }
-    }
 
     @Composable
     fun UpdateTiles(
@@ -250,9 +185,12 @@ fun GameBoardLayout(
                 for (column in 0..guess.lastIndex) {
                     if (guessHits[column].char == guess[column]) {
                         guessHits[column].found = true
-                        gameBoardState[currentRow][column] =
+                        setTileData(
+                            currentRow,
+                            column,
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
-                        CheckGameboardHasMatch(guess[column]) {
+                        )
+                        CheckGameBoardHasMatch(guess[column]) {
                             if (it) {
                                 keyDataUpdate[column] =
                                     KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
@@ -261,9 +199,12 @@ fun GameBoardLayout(
                     } else {
                         guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
                             it.found = true
-                            gameBoardState[currentRow][column] =
+                            setTileData(
+                                currentRow,
+                                column,
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
-                            CheckGameboardHasMatch(guess[column]) {
+                            )
+                            CheckGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(
@@ -273,9 +214,12 @@ fun GameBoardLayout(
                                 }
                             }
                         } ?: run {
-                            gameBoardState[currentRow][column] =
+                            setTileData(
+                                currentRow,
+                                column,
                                 TileData(guess[column], TileKeyStatus.SELECTED)
-                            CheckGameboardHasMatch(guess[column]) {
+                            )
+                            CheckGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(guess[column], status = TileKeyStatus.SELECTED)
@@ -288,11 +232,17 @@ fun GameBoardLayout(
             } else {
                 for (column in 0..guess.lastIndex) {
                     if (guess[column] == '?') {
-                        gameBoardState[currentRow][column] =
+                        setTileData(
+                            currentRow,
+                            column,
                             TileData(guess[column], TileKeyStatus.EMPTY)
+                        )
                     } else {
-                        gameBoardState[currentRow][column] =
+                        setTileData(
+                            currentRow,
+                            column,
                             TileData(guess[column], TileKeyStatus.NO_MATCH)
+                        )
                     }
                 }
             }
@@ -396,12 +346,11 @@ fun GameBoardLayout(
         Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter
     ) {
-        if (gameBoardState.isNotEmpty()) {
+        if (isKeyBoardStateInitialized().value) {
             GameBoard(
                 Modifier.fillMaxSize(33f),
-                gameBoardState.mapIndexed() { index, titleDataList ->
-                    RowData(rowPosition = index, tileData = titleDataList)
-                }) {
+                getRowData(),
+            ) {
                 rowUpdatedAllMatches = it
             }
         }
