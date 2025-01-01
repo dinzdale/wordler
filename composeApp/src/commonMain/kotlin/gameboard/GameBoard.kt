@@ -95,6 +95,7 @@ fun setTileData(row:Int, column:Int, tileData: TileData) {
 fun getRowData() = stateMap.map { entry->
     RowData(rowPosition = entry.key, tileData = entry.value)
 }
+
 @Composable
 fun isKeyBoardStateInitialized() = produceState(false) {
     value = stateMap.isNotEmpty()
