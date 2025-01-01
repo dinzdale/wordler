@@ -111,17 +111,12 @@ fun GameBoardLayout(
         )
     }
     val gameBoardState = remember {
-        mapOf(0 to
-                mutableStateListOf<TileData>().apply {
-                    IntRange(0, 4).forEach {
-                        add(TileData('X', TileKeyStatus.EMPTY))
-                    }
-                    1 to mutableStateListOf<TileData>().apply {
-                        IntRange(0, 4).forEach {
-                            add(TileData('X', TileKeyStatus.EMPTY))
-                        }
-                    },
-                },
+        mapOf(
+            0 to mutableStateListOf<TileData>().apply {
+                IntRange(0, 4).forEach {
+                    add(TileData('X', TileKeyStatus.EMPTY))
+                }
+            },
             1 to mutableStateListOf<TileData>().apply {
                 IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
@@ -144,7 +139,7 @@ fun GameBoardLayout(
             }
         )
     }
-    
+
     var keyDataUpdate = remember {
         mutableStateListOf(
             KeyData(
@@ -161,7 +156,6 @@ fun GameBoardLayout(
     }
     var loadWordDictionary by remember { mutableStateOf(true) }
 
-lastIndex
     var scrollState = rememberScrollState()
 
 
@@ -186,25 +180,12 @@ lastIndex
                     currentGuess[row][column] = '?'
                 }
             }
-            gameBoardState.values.forEach {
-                it.
-            }
-            IntRange(0,gameBoardState.size).forEach { row ->
-                
-                IntRange(0, gameBoardState[row]?.lastIndex?:0 ) { column ->
-                    gameBoardState[row, column] = TileData('X', TileKeyStatus.EMPTY)
 
-                }
-            }
-                IntRange(0,gameBoardState[0]?.size).forEach { 
-                    
-                }
-                
-            }
-            
-            for (row in 0..gameBoardState.lastIndex) {
-                for (column in 0..gameBoardState[0].lastIndex) {
-                    gameBoardState[row][column] = TileData('X', TileKeyStatus.EMPTY)
+
+            gameBoardState.keys.forEach { nxtKey ->
+                val lastIndex = gameBoardState[nxtKey]?.lastIndex ?: 0
+                IntRange(0, lastIndex).forEach { nxtIndex ->
+                    gameBoardState[nxtKey]?.set(nxtIndex, TileData('X', TileKeyStatus.EMPTY))
                 }
             }
         }
@@ -221,16 +202,14 @@ lastIndex
     fun CheckGameboardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
         gameBoardState.flatMap {
             val boolList = mutableListOf<Boolean>()
-            it.forEachIndexed { index, tileData ->
+            it.value.forEach { tileData->
                 boolList.add(
-                    index,
+                    it.key,
                     tileData.char == guess && tileData.status == TileKeyStatus.MATCH_IN_POSITION
                 )
             }
             boolList
         }.contains(true).also {
-
-
             onResult(it)
         }
     }
