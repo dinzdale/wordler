@@ -54,9 +54,8 @@ fun App() {
 @Composable
 fun ShowLayout() {
     MaterialTheme {
-
         Surface(modifier = Modifier.fillMaxSize()) {
-            var snackbarHostState = remember { SnackbarHostState() }
+            val snackbarHostState = remember { SnackbarHostState() }
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
@@ -73,9 +72,7 @@ fun ShowLayout() {
 
 @Composable
 fun InitGame(showSnackBarMessage: (String) -> Unit) {
-
     GameBoardLayout(showSnackBarMessage)
-
 }
 
 
@@ -103,19 +100,19 @@ fun GameBoardLayout(
 
     var hideWord by remember { mutableStateOf(true) }
 
-    var currentGuess = remember {
+    val currentGuess = remember {
         listOf(
-            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-            mutableStateListOf<Char>('?', '?', '?', '?', '?'),
-            mutableStateListOf<Char>('?', '?', '?', '?', '?')
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?'),
+            mutableStateListOf('?', '?', '?', '?', '?')
         )
     }
 
 
-    var keyDataUpdate = remember {
+    val keyDataUpdate = remember {
         mutableStateListOf(
             KeyData(
                 ';',
@@ -131,7 +128,7 @@ fun GameBoardLayout(
     }
     var loadWordDictionary by remember { mutableStateOf(true) }
 
-    var scrollState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
 
     LaunchedEffect(resetGameBoard) {
