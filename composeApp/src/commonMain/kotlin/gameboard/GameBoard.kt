@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
@@ -23,7 +24,7 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 
 
-val stateMap = mapOf(
+private val stateMap = mapOf(
             0 to mutableStateListOf<TileData>().apply {
                 IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
@@ -91,4 +92,18 @@ fun initGameBoardStates() {
             stateMap[nxtKey]?.set(nxtIndex, TileData('X', TileKeyStatus.EMPTY))
         }
     }
+}
+
+fun setTileData(row:Int, column:Int, tileData: TileData) {
+    stateMap[row]?.set(column,
+        tileData
+    )
+}
+
+fun getRowData() = stateMap.map { entry->
+    RowData(rowPosition = entry.key, tileData = entry.value)
+}
+@Composable
+fun isKeyBoardStateInitialized() = produceState(false) {
+    value = stateMap.isNotEmpty()
 }
