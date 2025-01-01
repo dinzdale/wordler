@@ -27,7 +27,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import gameboard.CheckGameBoardHasMatch
 import gameboard.GameBoard
+import gameboard.initGameBoardStates
+import gameboard.stateMap
 import keyboard.KeyBoard
 import kotlinx.coroutines.launch
 import model.repos.WordlerRepo
@@ -109,35 +112,7 @@ fun GameBoardLayout(
             mutableStateListOf<Char>('?', '?', '?', '?', '?')
         )
     }
-    val gameBoardState = remember {
-        mapOf(
-            0 to mutableStateListOf<TileData>().apply {
-                IntRange(0, 4).forEach {
-                    add(TileData('X', TileKeyStatus.EMPTY))
-                }
-            },
-            1 to mutableStateListOf<TileData>().apply {
-                IntRange(0, 4).forEach {
-                    add(TileData('X', TileKeyStatus.EMPTY))
-                }
-            },
-            2 to mutableStateListOf<TileData>().apply {
-                IntRange(0, 4).forEach {
-                    add(TileData('X', TileKeyStatus.EMPTY))
-                }
-            },
-            3 to mutableStateListOf<TileData>().apply {
-                IntRange(0, 4).forEach {
-                    add(TileData('X', TileKeyStatus.EMPTY))
-                }
-            },
-            4 to mutableStateListOf<TileData>().apply {
-                IntRange(0, 4).forEach {
-                    add(TileData('X', TileKeyStatus.EMPTY))
-                }
-            }
-        )
-    }
+
 
     var keyDataUpdate = remember {
         mutableStateListOf(
@@ -180,13 +155,14 @@ fun GameBoardLayout(
                 }
             }
 
+            initGameBoardStates()
 
-            gameBoardState.keys.forEach { nxtKey ->
-                val lastIndex = gameBoardState[nxtKey]?.lastIndex ?: 0
-                IntRange(0, lastIndex).forEach { nxtIndex ->
-                    gameBoardState[nxtKey]?.set(nxtIndex, TileData('X', TileKeyStatus.EMPTY))
-                }
-            }
+//            gameBoardState.keys.forEach { nxtKey ->
+//                val lastIndex = gameBoardState[nxtKey]?.lastIndex ?: 0
+//                IntRange(0, lastIndex).forEach { nxtIndex ->
+//                    gameBoardState[nxtKey]?.set(nxtIndex, TileData('X', TileKeyStatus.EMPTY))
+//                }
+//            }
         }
         resetGameBoard = false
 
@@ -197,18 +173,7 @@ fun GameBoardLayout(
         wordDictionary.removeAll { true }
         wordDictionary.addAll(it)
     }
-    @Composable
-    fun CheckGameBoardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
-        val boolList = mutableListOf<Boolean>()
-        gameBoardState.flatMap {
-            it.value.forEach { tileData ->
-                boolList.add(tileData.char == guess && tileData.status == TileKeyStatus.MATCH_IN_POSITION)
-            }
-            boolList
-        }.contains(true).also {
-            onResult(it)
-        }
-    }
+
 
     @Composable
     fun UpdateTiles(
@@ -227,7 +192,7 @@ fun GameBoardLayout(
                 for (column in 0..guess.lastIndex) {
                     if (guessHits[column].char == guess[column]) {
                         guessHits[column].found = true
-                        gameBoardState[currentRow]?.set(column,
+                        stateMap[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
                         )
                         CheckGameBoardHasMatch(guess[column]) {
@@ -239,7 +204,7 @@ fun GameBoardLayout(
                     } else {
                         guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
                             it.found = true
-                            gameBoardState[currentRow]?.set(column,
+                            stateMap[currentRow]?.set(column,
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
                             )
                             CheckGameBoardHasMatch(guess[column]) {
@@ -252,7 +217,7 @@ fun GameBoardLayout(
                                 }
                             }
                         } ?: run {
-                            gameBoardState[currentRow]?.set(column,
+                            stateMap[currentRow]?.set(column,
                                 TileData(guess[column], TileKeyStatus.SELECTED)
                             )
                             CheckGameBoardHasMatch(guess[column]) {
@@ -268,11 +233,11 @@ fun GameBoardLayout(
             } else {
                 for (column in 0..guess.lastIndex) {
                     if (guess[column] == '?') {
-                        gameBoardState[currentRow]?.set(column,
+                        stateMap[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.EMPTY)
                         )
                     } else {
-                        gameBoardState[currentRow]?.set(column,
+                        stateMap[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.NO_MATCH)
                         )
                     }
@@ -378,10 +343,10 @@ fun GameBoardLayout(
         Modifier.fillMaxSize().verticalScroll(scrollState),
         contentAlignment = Alignment.TopCenter
     ) {
-        if (gameBoardState.isNotEmpty()) {
+        if (stateMap.isNotEmpty()) {
             GameBoard(
                 Modifier.fillMaxSize(33f),
-                gameBoardState.map { entry->
+                stateMap.map { entry->
                     RowData(rowPosition = entry.key, tileData = entry.value)
                 }) {
                 rowUpdatedAllMatches = it
