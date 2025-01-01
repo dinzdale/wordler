@@ -200,13 +200,10 @@ fun GameBoardLayout(
     }
     @Composable
     fun CheckGameboardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
+        val boolList = mutableListOf<Boolean>()
         gameBoardState.flatMap {
-            val boolList = mutableListOf<Boolean>()
-            it.value.forEach { tileData->
-                boolList.add(
-                    it.key,
-                    tileData.char == guess && tileData.status == TileKeyStatus.MATCH_IN_POSITION
-                )
+            it.value.forEach { tileData ->
+                boolList.add(tileData.char == guess && tileData.status == TileKeyStatus.MATCH_IN_POSITION)
             }
             boolList
         }.contains(true).also {
@@ -231,8 +228,9 @@ fun GameBoardLayout(
                 for (column in 0..guess.lastIndex) {
                     if (guessHits[column].char == guess[column]) {
                         guessHits[column].found = true
-                        gameBoardState[currentRow][column] =
+                        gameBoardState[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
+                        )
                         CheckGameboardHasMatch(guess[column]) {
                             if (it) {
                                 keyDataUpdate[column] =
@@ -242,8 +240,9 @@ fun GameBoardLayout(
                     } else {
                         guessHits.firstOrNull { it.found.not() && it.char == guess[column] }?.also {
                             it.found = true
-                            gameBoardState[currentRow][column] =
+                            gameBoardState[currentRow]?.set(column,
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
+                            )
                             CheckGameboardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
@@ -254,8 +253,9 @@ fun GameBoardLayout(
                                 }
                             }
                         } ?: run {
-                            gameBoardState[currentRow][column] =
+                            gameBoardState[currentRow]?.set(column,
                                 TileData(guess[column], TileKeyStatus.SELECTED)
+                            )
                             CheckGameboardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
@@ -269,11 +269,13 @@ fun GameBoardLayout(
             } else {
                 for (column in 0..guess.lastIndex) {
                     if (guess[column] == '?') {
-                        gameBoardState[currentRow][column] =
+                        gameBoardState[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.EMPTY)
+                        )
                     } else {
-                        gameBoardState[currentRow][column] =
+                        gameBoardState[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.NO_MATCH)
+                        )
                     }
                 }
             }
@@ -380,8 +382,8 @@ fun GameBoardLayout(
         if (gameBoardState.isNotEmpty()) {
             GameBoard(
                 Modifier.fillMaxSize(33f),
-                gameBoardState.mapIndexed() { index, titleDataList ->
-                    RowData(rowPosition = index, tileData = titleDataList)
+                gameBoardState.map { entry->
+                    RowData(rowPosition = entry.key, tileData = entry.value)
                 }) {
                 rowUpdatedAllMatches = it
             }
