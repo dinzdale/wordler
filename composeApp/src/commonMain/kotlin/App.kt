@@ -27,7 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import gameboard.CheckGameBoardHasMatch
+import gameboard.checkGameBoardHasMatch
 import gameboard.GameBoard
 import gameboard.getRowData
 import gameboard.initGameBoardStates
@@ -190,7 +190,7 @@ fun GameBoardLayout(
                             column,
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
                         )
-                        CheckGameBoardHasMatch(guess[column]) {
+                        checkGameBoardHasMatch(guess[column]) {
                             if (it) {
                                 keyDataUpdate[column] =
                                     KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
@@ -204,7 +204,7 @@ fun GameBoardLayout(
                                 column,
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
                             )
-                            CheckGameBoardHasMatch(guess[column]) {
+                            checkGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(
@@ -219,7 +219,7 @@ fun GameBoardLayout(
                                 column,
                                 TileData(guess[column], TileKeyStatus.SELECTED)
                             )
-                            CheckGameBoardHasMatch(guess[column]) {
+                            checkGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(guess[column], status = TileKeyStatus.SELECTED)
