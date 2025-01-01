@@ -190,9 +190,6 @@ fun GameBoardLayout(
                             column,
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
                         )
-//                        stateMap[currentRow]?.set(column,
-//                            TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
-//                        )
                         CheckGameBoardHasMatch(guess[column]) {
                             if (it) {
                                 keyDataUpdate[column] =
@@ -207,9 +204,6 @@ fun GameBoardLayout(
                                 column,
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
                             )
-//                            stateMap[currentRow]?.set(column,
-//                                TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
-//                            )
                             CheckGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
@@ -225,9 +219,6 @@ fun GameBoardLayout(
                                 column,
                                 TileData(guess[column], TileKeyStatus.SELECTED)
                             )
-//                            stateMap[currentRow]?.set(column,
-//                                TileData(guess[column], TileKeyStatus.SELECTED)
-//                            )
                             CheckGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
@@ -246,18 +237,12 @@ fun GameBoardLayout(
                             column,
                             TileData(guess[column], TileKeyStatus.EMPTY)
                         )
-//                        stateMap[currentRow]?.set(column,
-//                            TileData(guess[column], TileKeyStatus.EMPTY)
-//                        )
                     } else {
                         setTileData(
                             currentRow,
                             column,
                             TileData(guess[column], TileKeyStatus.NO_MATCH)
                         )
-//                        stateMap[currentRow]?.set(column,
-//                            TileData(guess[column], TileKeyStatus.NO_MATCH)
-//                        )
                     }
                 }
             }
