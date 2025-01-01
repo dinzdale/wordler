@@ -100,7 +100,7 @@ fun GameBoardLayout(
     var hideWord by remember { mutableStateOf(true) }
 
     var currentGuess = remember {
-        mutableStateListOf(
+        listOf(
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
             mutableStateListOf<Char>('?', '?', '?', '?', '?'),
