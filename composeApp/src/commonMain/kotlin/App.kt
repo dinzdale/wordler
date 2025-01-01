@@ -18,7 +18,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -199,7 +198,7 @@ fun GameBoardLayout(
         wordDictionary.addAll(it)
     }
     @Composable
-    fun CheckGameboardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
+    fun CheckGameBoardHasMatch(guess: Char, onResult: (Boolean) -> Unit) {
         val boolList = mutableListOf<Boolean>()
         gameBoardState.flatMap {
             it.value.forEach { tileData ->
@@ -231,7 +230,7 @@ fun GameBoardLayout(
                         gameBoardState[currentRow]?.set(column,
                             TileData(guess[column], TileKeyStatus.MATCH_IN_POSITION)
                         )
-                        CheckGameboardHasMatch(guess[column]) {
+                        CheckGameBoardHasMatch(guess[column]) {
                             if (it) {
                                 keyDataUpdate[column] =
                                     KeyData(guess[column], status = TileKeyStatus.MATCH_IN_POSITION)
@@ -243,7 +242,7 @@ fun GameBoardLayout(
                             gameBoardState[currentRow]?.set(column,
                                 TileData(it.char, TileKeyStatus.MATCH_OUT_POSITION)
                             )
-                            CheckGameboardHasMatch(guess[column]) {
+                            CheckGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(
@@ -256,7 +255,7 @@ fun GameBoardLayout(
                             gameBoardState[currentRow]?.set(column,
                                 TileData(guess[column], TileKeyStatus.SELECTED)
                             )
-                            CheckGameboardHasMatch(guess[column]) {
+                            CheckGameBoardHasMatch(guess[column]) {
                                 if (it.not()) {
                                     keyDataUpdate[column] =
                                         KeyData(guess[column], status = TileKeyStatus.SELECTED)
