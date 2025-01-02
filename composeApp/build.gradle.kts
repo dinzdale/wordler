@@ -38,12 +38,12 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            implementation("io.ktor:ktor-client-android:$ktorVersion")
+            implementation(libs.ktor.client.android)
 
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
-            implementation("io.ktor:ktor-client-java:$ktorVersion")
+            implementation(libs.ktor.client.java)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -51,14 +51,14 @@ kotlin {
             implementation(compose.material)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
-            implementation("io.ktor:ktor-client-core:$ktorVersion")
-            implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         iosMain {
             // ...
             dependencies {
-                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+                implementation(libs.ktor.client.darwin)
             }
         }
     }
