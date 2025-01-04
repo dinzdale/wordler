@@ -319,7 +319,7 @@ fun GameBoardLayout(
         if (checkGameFinish) {
             checkGameFinish = false
             if (matchFound.not()) {
-                if (currentRow == 5) {
+                if (currentRow == 4) {
                     gameOverState = true
                     showSnackBarMessage("GAME OVER: Sorry, you did not guess the word.")
                 } else {
