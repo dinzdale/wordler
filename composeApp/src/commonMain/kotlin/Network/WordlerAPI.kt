@@ -17,19 +17,19 @@ object WordlerAPI {
         }
     }
 
-//    suspend fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
-//        return try {
-//            Result.success(client.get(
-//                getWordsVercelURL(noWords,length))
-//                .body())
-//        } catch (ex: Exception) {
-//            Result.failure(ex)
-//        }
-//    }
-
-    fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
-        return Result.success(listOf("arena","stout", "await", "smell", "silly"))
+    suspend fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
+        return try {
+            Result.success(client.get(
+                getWordsVercelURL(noWords,length))
+                .body())
+        } catch (ex: Exception) {
+            Result.failure(ex)
+        }
     }
+
+//    fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
+//        return Result.success(listOf("arena","stout", "await", "smell", "silly"))
+//    }
 
 
     suspend fun getDictionaryDefinition(word: String): Result<List<DictionaryItem>> {
