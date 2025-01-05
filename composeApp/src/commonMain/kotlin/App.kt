@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import gameboard.checkGameBoardHasMatch
 import gameboard.GameBoard
 import gameboard.getRowData
@@ -35,6 +36,7 @@ import gameboard.isKeyBoardStateInitialized
 import gameboard.setTileData
 import keyboard.KeyBoard
 import kotlinx.coroutines.launch
+import model.WordlerTopBar
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
 import model.ui.game_pieces.KeyData
@@ -55,12 +57,17 @@ fun App() {
 fun ShowLayout() {
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
+            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
             Scaffold(
+                topBar =  { WordlerTopBar({}){ menuItem->
+                    scope.launch {
+                        snackbarHostState.showSnackbar("${menuItem.title} selected")
+                    }
+                } },
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
-                val scope = rememberCoroutineScope()
-                InitGame { message ->
+                               InitGame { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
                     }
@@ -69,6 +76,8 @@ fun ShowLayout() {
         }
     }
 }
+
+
 
 @Composable
 fun InitGame(showSnackBarMessage: (String) -> Unit) {
@@ -264,7 +273,7 @@ fun GameBoardLayout(
     }
 
     LaunchedEffect(currentGuess[currentRow][currentColumn]) {
-        SetCurrentColumn(currentGuess[currentRow]) {
+        setCurrentColumn(currentGuess[currentRow]) {
             currentColumn = it
         }
     }
@@ -455,7 +464,7 @@ fun allowGuess(lastGuess: Char) = produceState(false, lastGuess) {
 }
 
 
-fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
+fun setCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
     if (guess.isNotEmpty()) {
         guess.indexOf('?').also {
             if (it > -1) {
@@ -466,3 +475,6 @@ fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
         }
     }
 }
+
+
+
