@@ -19,27 +19,27 @@ import model.ui.game_pieces.TileKeyStatus
 
 
 private val stateMap = mapOf(
-            0 to mutableStateListOf<TileData>().apply {
+            0 to mutableListOf<TileData>().apply {
                 IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
                 }
             },
-            1 to mutableStateListOf<TileData>().apply {
+            1 to mutableListOf<TileData>().apply {
                IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
                 }
             },
-            2 to mutableStateListOf<TileData>().apply {
+            2 to mutableListOf<TileData>().apply {
                 IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
                 }
             },
-            3 to mutableStateListOf<TileData>().apply {
+            3 to mutableListOf<TileData>().apply {
                 IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
                 }
             },
-            4 to mutableStateListOf<TileData>().apply {
+            4 to mutableListOf<TileData>().apply {
                 IntRange(0, 4).forEach {
                     add(TileData('X', TileKeyStatus.EMPTY))
                 }
