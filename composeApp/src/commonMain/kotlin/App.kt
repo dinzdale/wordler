@@ -36,6 +36,7 @@ import gameboard.isKeyBoardStateInitialized
 import gameboard.setTileData
 import keyboard.KeyBoard
 import kotlinx.coroutines.launch
+import model.MenuItem
 import model.WordlerTopBar
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
@@ -59,15 +60,24 @@ fun ShowLayout() {
         Surface(modifier = Modifier.fillMaxSize()) {
             val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
+            var hideWord by remember { mutableStateOf(true) }
             Scaffold(
-                topBar =  { WordlerTopBar({}){ menuItem->
-                    scope.launch {
-                        snackbarHostState.showSnackbar("${menuItem.title} selected")
+                topBar = {
+                    WordlerTopBar({}) { menuItem ->
+                        when (menuItem) {
+                            MenuItem.ShowWord -> hideWord = hideWord.not()
+                            MenuItem.NewGame -> {}
+                            MenuItem.SaveGame -> {}
+                            MenuItem.ReloadGame -> {}
+                        }
+                        scope.launch {
+                            snackbarHostState.showSnackbar("${menuItem.title} selected")
+                        }
                     }
-                } },
+                },
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
-                               InitGame { message ->
+                InitGame(hideWord) { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
                     }
@@ -78,15 +88,15 @@ fun ShowLayout() {
 }
 
 
-
 @Composable
-fun InitGame(showSnackBarMessage: (String) -> Unit) {
-    GameBoardLayout(showSnackBarMessage)
+fun InitGame(hideWord: Boolean, showSnackBarMessage: (String) -> Unit) {
+    GameBoardLayout(hideWord, showSnackBarMessage)
 }
 
 
 @Composable
 fun GameBoardLayout(
+    hideWord: Boolean,
     showSnackBarMessage: (String) -> Unit,
 ) {
 
@@ -404,7 +414,7 @@ fun GameBoardLayout(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button({
-                    hideWord = hideWord.not()
+                    //hideWord = hideWord.not()
                 }) {
                     if (hideWord) {
                         Text("show word")
