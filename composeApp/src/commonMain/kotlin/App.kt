@@ -446,8 +446,19 @@ fun GameBoardLayout(
         }
     }
 }
+@Composable
+fun updateDictionary(newGame: Boolean, onLoadDictionary: (Boolean) -> Unit) {
+    var wordSelectionRow by remember { mutableStateOf(0) }
 
+    wordSelectionRow = ++wordSelectionRow % 3
+    if (wordSelectionRow == 0) {
+        onLoadDictionary(true)
 
+    } else {
+        onLoadDictionary(false)
+    }
+
+}
 @Composable
 fun GetWordDictionary(load: Boolean, onResults: (List<WordDictionary>) -> Unit) {
     LaunchedEffect(load) {
