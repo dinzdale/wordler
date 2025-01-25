@@ -1,21 +1,15 @@
 import Network.WordlerAPI
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -61,14 +55,14 @@ fun ShowLayout() {
             val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
             var hideWord by remember { mutableStateOf(true) }
-            var loadDictionary by remember { mutableStateOf(true) }
+            var newGame by remember { mutableStateOf(true) }
             Scaffold(
                 topBar = {
                     WordlerTopBar({}) { menuItem ->
                         when (menuItem) {
                             MenuItem.ShowWord -> hideWord = hideWord.not()
                             MenuItem.NewGame -> {
-                                loadDictionary = true
+                                newGame = true
                             }
                             MenuItem.SaveGame -> {}
                             MenuItem.ReloadGame -> {}
@@ -80,10 +74,7 @@ fun ShowLayout() {
                 },
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
-                GetWordDictionary(loadDictionary) {
-                    loadDictionary = false
-                }
-                InitGame(hideWord) { message ->
+                InitGame(hideWord,newGame,{newGame=false}) { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
                     }
@@ -95,14 +86,16 @@ fun ShowLayout() {
 
 
 @Composable
-fun InitGame(hideWord: Boolean, showSnackBarMessage: (String) -> Unit) {
-    GameBoardLayout(hideWord, showSnackBarMessage)
+fun InitGame(hideWord: Boolean, newGame:Boolean, onNewGameDone:()->Unit,showSnackBarMessage: (String) -> Unit) {
+    GameBoardLayout(hideWord, newGame, onNewGameDone, showSnackBarMessage)
 }
 
 
 @Composable
 fun GameBoardLayout(
     hideWord: Boolean,
+    newGame: Boolean,
+    onNewGameDone:()->Unit,
     showSnackBarMessage: (String) -> Unit,
 ) {
 
@@ -155,6 +148,17 @@ fun GameBoardLayout(
 
     val scrollState = rememberScrollState()
 
+    if (newGame) {
+
+            wordSelectionRow = ++wordSelectionRow % 3
+            if (wordSelectionRow == 0) {
+                loadWordDictionary = true
+            }
+
+        resetKeyboard = true
+        hideWord = true
+        onNewGameDone()
+    }
 
     LaunchedEffect(resetGameBoard) {
         if (resetGameBoard) {
