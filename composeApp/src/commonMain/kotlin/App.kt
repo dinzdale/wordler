@@ -462,3 +462,4 @@ fun setCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
 
 
 
+
