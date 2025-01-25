@@ -418,41 +418,6 @@ fun GameBoardLayout(
                     }
                 }
             }
-//            Row(
-//                Modifier.fillMaxWidth().wrapContentHeight(),
-//                horizontalArrangement = Arrangement.SpaceAround,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Button({
-//                    //hideWord = hideWord.not()
-//                }) {
-//                    if (hideWord) {
-//                        Text("show word")
-//                    } else {
-//                        Text("hide word")
-//                    }
-//                }
-//                if (hideWord.not()) {
-//                    Button({
-//                        if (loadWordDictionary.not()) {
-//                            wordSelectionRow = ++wordSelectionRow % 3
-//                            if (wordSelectionRow == 0) {
-//                                loadWordDictionary = true
-//                            }
-//                        }
-//                        resetKeyboard = true
-//                        hideWord = true
-//                    }) {
-//                        Text("new word")
-//                    }
-//
-//                    if (wordDictionary.isNotEmpty()) {
-//                        wordDictionary[wordSelectionRow].also {
-//                            Text(it.wordList.toString())
-//                        }
-//                    }
-//                }
-//            }
         }
     }
 }
