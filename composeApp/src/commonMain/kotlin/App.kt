@@ -61,12 +61,15 @@ fun ShowLayout() {
             val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
             var hideWord by remember { mutableStateOf(true) }
+            var loadDictionary by remember { mutableStateOf(true) }
             Scaffold(
                 topBar = {
                     WordlerTopBar({}) { menuItem ->
                         when (menuItem) {
                             MenuItem.ShowWord -> hideWord = hideWord.not()
-                            MenuItem.NewGame -> {}
+                            MenuItem.NewGame -> {
+                                loadDictionary = true
+                            }
                             MenuItem.SaveGame -> {}
                             MenuItem.ReloadGame -> {}
                         }
@@ -77,6 +80,9 @@ fun ShowLayout() {
                 },
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
+                GetWordDictionary(loadDictionary) {
+                    loadDictionary = false
+                }
                 InitGame(hideWord) { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
@@ -408,57 +414,45 @@ fun GameBoardLayout(
                     }
                 }
             }
-            Row(
-                Modifier.fillMaxWidth().wrapContentHeight(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button({
-                    //hideWord = hideWord.not()
-                }) {
-                    if (hideWord) {
-                        Text("show word")
-                    } else {
-                        Text("hide word")
-                    }
-                }
-                if (hideWord.not()) {
-                    Button({
-                        if (loadWordDictionary.not()) {
-                            wordSelectionRow = ++wordSelectionRow % 3
-                            if (wordSelectionRow == 0) {
-                                loadWordDictionary = true
-                            }
-                        }
-                        resetKeyboard = true
-                        hideWord = true
-                    }) {
-                        Text("new word")
-                    }
-
-                    if (wordDictionary.isNotEmpty()) {
-                        wordDictionary[wordSelectionRow].also {
-                            Text(it.wordList.toString())
-                        }
-                    }
-                }
-            }
+//            Row(
+//                Modifier.fillMaxWidth().wrapContentHeight(),
+//                horizontalArrangement = Arrangement.SpaceAround,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Button({
+//                    //hideWord = hideWord.not()
+//                }) {
+//                    if (hideWord) {
+//                        Text("show word")
+//                    } else {
+//                        Text("hide word")
+//                    }
+//                }
+//                if (hideWord.not()) {
+//                    Button({
+//                        if (loadWordDictionary.not()) {
+//                            wordSelectionRow = ++wordSelectionRow % 3
+//                            if (wordSelectionRow == 0) {
+//                                loadWordDictionary = true
+//                            }
+//                        }
+//                        resetKeyboard = true
+//                        hideWord = true
+//                    }) {
+//                        Text("new word")
+//                    }
+//
+//                    if (wordDictionary.isNotEmpty()) {
+//                        wordDictionary[wordSelectionRow].also {
+//                            Text(it.wordList.toString())
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
-@Composable
-fun updateDictionary(newGame: Boolean, onLoadDictionary: (Boolean) -> Unit) {
-    var wordSelectionRow by remember { mutableStateOf(0) }
 
-    wordSelectionRow = ++wordSelectionRow % 3
-    if (wordSelectionRow == 0) {
-        onLoadDictionary(true)
-
-    } else {
-        onLoadDictionary(false)
-    }
-
-}
 @Composable
 fun GetWordDictionary(load: Boolean, onResults: (List<WordDictionary>) -> Unit) {
     LaunchedEffect(load) {
