@@ -1,21 +1,15 @@
 import Network.WordlerAPI
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+
 import gameboard.checkGameBoardHasMatch
 import gameboard.GameBoard
 import gameboard.getRowData
@@ -35,6 +30,8 @@ import gameboard.isKeyBoardStateInitialized
 import gameboard.setTileData
 import keyboard.KeyBoard
 import kotlinx.coroutines.launch
+import model.MenuItem
+import model.WordlerTopBar
 import model.repos.WordlerRepo
 import model.ui.game_pieces.GuessHit
 import model.ui.game_pieces.KeyData
@@ -55,12 +52,29 @@ fun App() {
 fun ShowLayout() {
     MaterialTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
+            val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
+            var hideWord by remember { mutableStateOf(true) }
+            var newGame by remember { mutableStateOf(true) }
             Scaffold(
+                topBar = {
+                    WordlerTopBar({}) { menuItem ->
+                        when (menuItem) {
+                            MenuItem.ShowWord -> hideWord = hideWord.not()
+                            MenuItem.NewGame -> {
+                                newGame = true
+                            }
+                            MenuItem.SaveGame -> {}
+                            MenuItem.ReloadGame -> {}
+                        }
+                        scope.launch {
+                            snackbarHostState.showSnackbar("${menuItem.title} selected")
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
-                val scope = rememberCoroutineScope()
-                InitGame { message ->
+                InitGame(hideWord,newGame,{newGame=false}) { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
                     }
@@ -70,14 +84,18 @@ fun ShowLayout() {
     }
 }
 
+
 @Composable
-fun InitGame(showSnackBarMessage: (String) -> Unit) {
-    GameBoardLayout(showSnackBarMessage)
+fun InitGame(hideWord: Boolean, newGame:Boolean, onNewGameDone:()->Unit,showSnackBarMessage: (String) -> Unit) {
+    GameBoardLayout(hideWord, newGame, onNewGameDone, showSnackBarMessage)
 }
 
 
 @Composable
 fun GameBoardLayout(
+    hideWord: Boolean,
+    newGame: Boolean,
+    onNewGameDone:()->Unit,
     showSnackBarMessage: (String) -> Unit,
 ) {
 
@@ -130,6 +148,17 @@ fun GameBoardLayout(
 
     val scrollState = rememberScrollState()
 
+    if (newGame) {
+
+            wordSelectionRow = ++wordSelectionRow % 3
+            if (wordSelectionRow == 0) {
+                loadWordDictionary = true
+            }
+
+        resetKeyboard = true
+        hideWord = true
+        onNewGameDone()
+    }
 
     LaunchedEffect(resetGameBoard) {
         if (resetGameBoard) {
@@ -264,7 +293,7 @@ fun GameBoardLayout(
     }
 
     LaunchedEffect(currentGuess[currentRow][currentColumn]) {
-        SetCurrentColumn(currentGuess[currentRow]) {
+        setCurrentColumn(currentGuess[currentRow]) {
             currentColumn = it
         }
     }
@@ -389,45 +418,9 @@ fun GameBoardLayout(
                     }
                 }
             }
-            Row(
-                Modifier.fillMaxWidth().wrapContentHeight(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button({
-                    hideWord = hideWord.not()
-                }) {
-                    if (hideWord) {
-                        Text("show word")
-                    } else {
-                        Text("hide word")
-                    }
-                }
-                if (hideWord.not()) {
-                    Button({
-                        if (loadWordDictionary.not()) {
-                            wordSelectionRow = ++wordSelectionRow % 3
-                            if (wordSelectionRow == 0) {
-                                loadWordDictionary = true
-                            }
-                        }
-                        resetKeyboard = true
-                        hideWord = true
-                    }) {
-                        Text("new word")
-                    }
-
-                    if (wordDictionary.isNotEmpty()) {
-                        wordDictionary[wordSelectionRow].also {
-                            Text(it.wordList.toString())
-                        }
-                    }
-                }
-            }
         }
     }
 }
-
 
 @Composable
 fun GetWordDictionary(load: Boolean, onResults: (List<WordDictionary>) -> Unit) {
@@ -455,7 +448,7 @@ fun allowGuess(lastGuess: Char) = produceState(false, lastGuess) {
 }
 
 
-fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
+fun setCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
     if (guess.isNotEmpty()) {
         guess.indexOf('?').also {
             if (it > -1) {
@@ -466,3 +459,7 @@ fun SetCurrentColumn(guess: List<Char>, onCurrentColumn: (Int) -> Unit) {
         }
     }
 }
+
+
+
+
