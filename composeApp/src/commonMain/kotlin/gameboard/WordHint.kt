@@ -20,12 +20,11 @@ import kotlinx.coroutines.FlowPreview
 @Composable
 fun WordHint(showHint: Boolean, word: String, onDismiss: () -> Unit) {
     if (showHint) {
-        Box(Modifier.width(50.dp), contentAlignment = Alignment.Center){
-            Dialog(onDismiss,DialogProperties(usePlatformDefaultWidth = false)) {
-                    Text(word, style = TextStyle(fontSize = 24.sp))
-                }
-            }
+        Dialog(onDismiss, DialogProperties(usePlatformDefaultWidth = false)) {
+            Text(word, style = TextStyle(fontSize = 24.sp))
+        }
     }
+
 }
 
 
