@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 
 import gameboard.checkGameBoardHasMatch
 import gameboard.GameBoard
+import gameboard.WordHint
 import gameboard.getRowData
 import gameboard.initGameBoardStates
 import gameboard.isKeyBoardStateInitialized
@@ -54,16 +55,19 @@ fun ShowLayout() {
         Surface(modifier = Modifier.fillMaxSize()) {
             val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
-            var hideWord by remember { mutableStateOf(true) }
+            var showWord by remember { mutableStateOf(false) }
             var newGame by remember { mutableStateOf(true) }
             Scaffold(
                 topBar = {
                     WordlerTopBar({}) { menuItem ->
                         when (menuItem) {
-                            MenuItem.ShowWord -> hideWord = hideWord.not()
+                            MenuItem.ShowWord -> {
+                                showWord = true
+                            }
                             MenuItem.NewGame -> {
                                 newGame = true
                             }
+
                             MenuItem.SaveGame -> {}
                             MenuItem.ReloadGame -> {}
                         }
@@ -74,7 +78,7 @@ fun ShowLayout() {
                 },
                 modifier = Modifier.fillMaxSize(),
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
-                InitGame(hideWord,newGame,{newGame=false}) { message ->
+                InitGame(showWord, newGame, { newGame = false },{showWord = false}) { message ->
                     scope.launch {
                         snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
                     }
@@ -86,21 +90,29 @@ fun ShowLayout() {
 
 
 @Composable
-fun InitGame(hideWord: Boolean, newGame:Boolean, onNewGameDone:()->Unit,showSnackBarMessage: (String) -> Unit) {
-    GameBoardLayout(hideWord, newGame, onNewGameDone, showSnackBarMessage)
+fun InitGame(
+    showWord: Boolean,
+    newGame: Boolean,
+    onNewGameDone: () -> Unit,
+    onShowWordDone: () -> Unit,
+    showSnackBarMessage: (String) -> Unit
+) {
+    GameBoardLayout(showWord, newGame, onNewGameDone, onShowWordDone,showSnackBarMessage)
 }
 
 
 @Composable
 fun GameBoardLayout(
-    hideWord: Boolean,
+    showWord: Boolean,
     newGame: Boolean,
-    onNewGameDone:()->Unit,
+    onNewGameDone: () -> Unit,
+    onShowWordDone: () -> Unit,
     showSnackBarMessage: (String) -> Unit,
 ) {
 
     var wordDictionary = remember { mutableListOf<WordDictionary>() }
     var wordSelectionRow by remember { mutableStateOf(0) }
+
 
     var currentRow by remember { mutableStateOf(0) }
     var currentColumn by remember { mutableStateOf(0) }
@@ -148,12 +160,17 @@ fun GameBoardLayout(
 
     val scrollState = rememberScrollState()
 
-    if (newGame) {
+    if (wordDictionary.isNotEmpty()) {
+        WordHint(showWord, wordDictionary[wordSelectionRow].wordList.toString()) {
+            onShowWordDone()
+        }
+    }
 
-            wordSelectionRow = ++wordSelectionRow % 3
-            if (wordSelectionRow == 0) {
-                loadWordDictionary = true
-            }
+    if (newGame) {
+        wordSelectionRow = ++wordSelectionRow % 3
+        if (wordSelectionRow == 0) {
+            loadWordDictionary = true
+        }
 
         resetKeyboard = true
         hideWord = true
