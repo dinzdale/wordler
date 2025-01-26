@@ -17,7 +17,7 @@ import kotlinx.coroutines.FlowPreview
 fun WordHint(showHint: Boolean, word: String, onDismiss: () -> Unit) {
     if (showHint) {
         Box(Modifier.fillMaxSize(.5f), contentAlignment = Alignment.Center) {
-            Dialog(onDismiss) {
+            Dialog(onDismiss,DialogProperties()) {
                 Text(word, style = TextStyle(fontSize = 24.sp))
             }
         }
