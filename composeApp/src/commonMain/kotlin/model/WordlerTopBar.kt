@@ -17,14 +17,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
+import wordler.composeapp.generated.resources.Res
+import wordler.composeapp.generated.resources.menu_new_game
+import wordler.composeapp.generated.resources.menu_reload_game
+import wordler.composeapp.generated.resources.menu_save_game
+import wordler.composeapp.generated.resources.menu_show_word
 
-enum class MenuItem(val title: String) {
-    NewGame("New game"),
-    ShowWord("Show word"),
-    SaveGame("Save game"),
-    ReloadGame("Reload game"),
+enum class MenuItem() {
+    NewGame,
+    ShowWord,
+    SaveGame,
+    ReloadGame,
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun WordlerTopBar(onDismiss: () -> Unit, onMenuItemSelected: (MenuItem) -> Unit) {
     var show by remember { mutableStateOf(false) }
@@ -50,22 +58,22 @@ fun WordlerTopBar(onDismiss: () -> Unit, onMenuItemSelected: (MenuItem) -> Unit)
                     DropdownMenuItem({
                         collapseAndCall(MenuItem.NewGame)
                     }) {
-                        Text(text = MenuItem.NewGame.title)
+                        Text(text = stringResource(Res.string.menu_new_game))
                     }
                     DropdownMenuItem({
                         collapseAndCall(MenuItem.SaveGame)
                     }) {
-                        Text(text = MenuItem.SaveGame.title)
+                        Text(text = stringResource(Res.string.menu_save_game))
                     }
                     DropdownMenuItem({
                         collapseAndCall(MenuItem.ShowWord)
                     }) {
-                        Text(text = MenuItem.ShowWord.title)
+                        Text(text = stringResource(Res.string.menu_show_word))
                     }
                     DropdownMenuItem({
                         collapseAndCall(MenuItem.ReloadGame)
                     }) {
-                        Text(text = MenuItem.ReloadGame.title)
+                        Text(text = stringResource(Res.string.menu_reload_game))
                     }
                 }
             }

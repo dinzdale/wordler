@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_new_game">New Game</string>
+    <string name="menu_save_game">Save Game</string>
+    <string name="menu_show_word">Show Word</string>
+    <string name="menu_reload_game">Reload Game</string>
+</resources>

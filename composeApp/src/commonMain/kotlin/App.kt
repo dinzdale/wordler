@@ -71,9 +71,6 @@ fun ShowLayout() {
                             MenuItem.SaveGame -> {}
                             MenuItem.ReloadGame -> {}
                         }
-                        scope.launch {
-                            snackbarHostState.showSnackbar("${menuItem.title} selected")
-                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize(),
