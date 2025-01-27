@@ -51,7 +51,7 @@ fun WordlerTopBar(onDismiss: () -> Unit, onMenuItemSelected: (MenuItem) -> Unit)
             Text("Options", modifier = Modifier.clickable { show = true })
             if (show) {
                 DropdownMenu(
-                    offset = DpOffset(-150.dp, 10.dp),
+                    offset = DpOffset(-5.dp, 10.dp),
                     expanded = true,
                     onDismissRequest = {show = false}
                 ) {
