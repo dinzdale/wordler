@@ -41,6 +41,11 @@ import model.ui.game_pieces.TileData
 import model.ui.game_pieces.TileKeyStatus
 import model.ui.game_pieces.WordDictionary
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import wordler.composeapp.generated.resources.Res
+import wordler.composeapp.generated.resources.snackbar_message_fail
+import wordler.composeapp.generated.resources.snackbar_message_succeed
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -98,6 +103,7 @@ fun InitGame(
 }
 
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun GameBoardLayout(
     showWord: Boolean,
@@ -364,7 +370,7 @@ fun GameBoardLayout(
             if (matchFound.not()) {
                 if (currentRow == 4) {
                     gameOverState = true
-                    showSnackBarMessage("GAME OVER: Sorry, you did not guess the word.")
+                    showSnackBarMessage(getString(Res.string.snackbar_message_fail))
                 } else {
                     // move to next guess line
                     // reset everything
@@ -377,7 +383,7 @@ fun GameBoardLayout(
         if (rowUpdatedAllMatches) {
             gameOverState = true
             if (rowUpdatedAllMatches) {
-                showSnackBarMessage("YOU WIN, YOU GUESSED CORRECTLY!! NICE GOING!!")
+                showSnackBarMessage(getString(Res.string.snackbar_message_succeed))
                 rowUpdatedAllMatches = false
             }
         }

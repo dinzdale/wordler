@@ -4,4 +4,7 @@
     <string name="menu_save_game">Save Game</string>
     <string name="menu_show_word">Show Word</string>
     <string name="menu_reload_game">Reload Game</string>
+    <!-- Snackbar messages -->
+    <string name="snackbar_message_fail">GAME OVER: Sorry, you did not guess the word.</string>
+    <string name="snackbar_message_succeed">"YOU WIN, You guessed correctly!! NICE GOING!!</string>
 </resources>
