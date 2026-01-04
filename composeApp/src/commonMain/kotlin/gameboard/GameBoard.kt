@@ -1,6 +1,5 @@
 package gameboard
 
-//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -51,23 +52,59 @@ private val stateMap = mapOf(
 
 @Composable
 fun GameBoard(modifier: Modifier, rows: List<RowData>, onRowUpdateFinish: (Boolean) -> Unit) {
-    val woodGradient = Brush.verticalGradient(
-        0.00f to Color(0xFF5D4037),
-        0.05f to Color(0xFF4E342E),
-        0.10f to Color(0xFF5D4037),
-        0.25f to Color(0xFF6D4C41),
-        0.40f to Color(0xFF5D4037),
-        0.50f to Color(0xFF3E2723),
-        0.60f to Color(0xFF5D4037),
-        0.75f to Color(0xFF795548),
-        0.90f to Color(0xFF5D4037),
-        1.00f to Color(0xFF4E342E)
+    val metalGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFCFD8DC),
+            Color(0xFF90A4AE),
+            Color(0xFF78909C),
+            Color(0xFF90A4AE),
+            Color(0xFFCFD8DC)
+        ),
+        start = Offset(0f, 0f),
+        end = Offset.Infinite
     )
 
     Column(
         modifier
             .fillMaxSize()
-            .background(woodGradient)
+            .drawBehind {
+                // Background metal sheet
+                drawRect(brush = metalGradient)
+                
+                // Rivets in the corners
+                val rivetColor = Color(0xFF546E7A)
+                val rivetShadow = Color(0xFF37474F)
+                val rivetRadius = 12f
+                val padding = 30f
+                
+                val corners = listOf(
+                    Offset(padding, padding),
+                    Offset(size.width - padding, padding),
+                    Offset(padding, size.height - padding),
+                    Offset(size.width - padding, size.height - padding)
+                )
+                
+                corners.forEach { center ->
+                    // Shadow for 3D effect
+                    drawCircle(
+                        color = rivetShadow,
+                        radius = rivetRadius + 2f,
+                        center = center + Offset(2f, 2f)
+                    )
+                    // The rivet
+                    drawCircle(
+                        color = rivetColor,
+                        radius = rivetRadius,
+                        center = center
+                    )
+                    // Reflection
+                    drawCircle(
+                        color = Color.White.copy(alpha = 0.3f),
+                        radius = rivetRadius / 2,
+                        center = center - Offset(3f, 3f)
+                    )
+                }
+            }
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
