@@ -1,4 +1,5 @@
 import Network.WordlerAPI
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 
 import gameboard.checkGameBoardHasMatch
 import gameboard.GameBoard
@@ -51,8 +54,24 @@ fun App() {
 
 @Composable
 fun ShowLayout() {
+    val woodGradient = Brush.verticalGradient(
+        0.00f to Color(0xFF5D4037),
+        0.05f to Color(0xFF4E342E),
+        0.10f to Color(0xFF5D4037),
+        0.25f to Color(0xFF6D4C41),
+        0.40f to Color(0xFF5D4037),
+        0.50f to Color(0xFF3E2723),
+        0.60f to Color(0xFF5D4037),
+        0.75f to Color(0xFF795548),
+        0.90f to Color(0xFF5D4037),
+        1.00f to Color(0xFF4E342E)
+    )
+
     MaterialTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            modifier = Modifier.fillMaxSize().background(woodGradient),
+            color = Color.Transparent
+        ) {
             val scope = rememberCoroutineScope()
             val snackbarHostState = remember { SnackbarHostState() }
             var showWord by remember { mutableStateOf(false) }
@@ -77,6 +96,7 @@ fun ShowLayout() {
                     }
                 },
                 modifier = Modifier.fillMaxSize(),
+                backgroundColor = Color.Transparent,
                 snackbarHost = { SnackbarHost(snackbarHostState) }) {
                 InitGame(showWord, newGame, { newGame = false },{showWord = false}) { message ->
                     scope.launch {
