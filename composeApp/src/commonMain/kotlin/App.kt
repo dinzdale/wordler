@@ -1,8 +1,13 @@
 import Network.WordlerAPI
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -24,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 import gameboard.checkGameBoardHasMatch
 import gameboard.GameBoard
@@ -97,10 +103,12 @@ fun ShowLayout() {
                 },
                 modifier = Modifier.fillMaxSize(),
                 backgroundColor = Color.Transparent,
-                snackbarHost = { SnackbarHost(snackbarHostState) }) {
-                InitGame(showWord, newGame, { newGame = false },{showWord = false}) { message ->
-                    scope.launch {
-                        snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
+                snackbarHost = { SnackbarHost(snackbarHostState) }) { paddingValues ->
+                Box(Modifier.padding(paddingValues).fillMaxSize()) {
+                    InitGame(showWord, newGame, { newGame = false }, { showWord = false }) { message ->
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
+                        }
                     }
                 }
             }
@@ -405,54 +413,54 @@ fun GameBoardLayout(
             }
         }
     }
-    Box(
+    Column(
         Modifier.fillMaxSize().verticalScroll(scrollState),
-        contentAlignment = Alignment.TopCenter
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         if (isKeyBoardStateInitialized().value) {
             GameBoard(
-                Modifier.fillMaxSize(33f),
+                Modifier.fillMaxWidth(0.9f),
                 getRowData(),
             ) {
                 rowUpdatedAllMatches = it
             }
         }
-        Column(Modifier.align(Alignment.BottomCenter)) {
-            KeyBoard(
-                Modifier,
-                keyDataUpdate.toList(),
-                resetKeyboard,
-                {
-                    resetKeyboard = false
-                    resetGameBoard = true
+        Spacer(Modifier.height(32.dp))
+        KeyBoard(
+            Modifier,
+            keyDataUpdate.toList(),
+            resetKeyboard,
+            {
+                resetKeyboard = false
+                resetGameBoard = true
+            }
+        ) { keyData ->
+            when (keyData.keyType) {
+                KeyType.ALPHA -> keyData.char?.also {
+                    if (IntRange(0, 4).contains(currentColumn)) {
+                        currentGuess[currentRow][currentColumn] = it
+                    }
                 }
-            ) { keyData ->
-                when (keyData.keyType) {
-                    KeyType.ALPHA -> keyData.char?.also {
-                        if (IntRange(0, 4).contains(currentColumn)) {
-                            currentGuess[currentRow][currentColumn] = it
-                        }
-                    }
 
-                    KeyType.DELETE -> {
-                        if (currentColumn == 4) {
-                            if (currentGuess[currentRow][currentColumn] != '?') {
-                                currentGuess[currentRow][currentColumn] = '?'
-                            } else {
-                                currentGuess[currentRow][--currentColumn] = '?'
-                            }
-                        } else {
-                            if (--currentColumn < 0) {
-                                currentColumn = 0
-                            }
+                KeyType.DELETE -> {
+                    if (currentColumn == 4) {
+                        if (currentGuess[currentRow][currentColumn] != '?') {
                             currentGuess[currentRow][currentColumn] = '?'
+                        } else {
+                            currentGuess[currentRow][--currentColumn] = '?'
                         }
+                    } else {
+                        if (--currentColumn < 0) {
+                            currentColumn = 0
+                        }
+                        currentGuess[currentRow][currentColumn] = '?'
                     }
+                }
 
-                    KeyType.ENTER -> {
-                        //renderAsGuess = renderAsGuess.not()
-                        checkForMatch = true
-                    }
+                KeyType.ENTER -> {
+                    //renderAsGuess = renderAsGuess.not()
+                    checkForMatch = true
                 }
             }
         }
