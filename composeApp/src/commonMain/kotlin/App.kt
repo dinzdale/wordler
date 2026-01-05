@@ -62,15 +62,37 @@ fun App() {
 fun ShowLayout() {
     val woodGradient = Brush.verticalGradient(
         0.00f to Color(0xFF5D4037),
-        0.05f to Color(0xFF4E342E),
-        0.10f to Color(0xFF5D4037),
-        0.25f to Color(0xFF6D4C41),
-        0.40f to Color(0xFF5D4037),
+        0.02f to Color(0xFF4E342E),
+        0.04f to Color(0xFF5D4037),
+        0.05f to Color(0xFF21100B), // Gap
+        0.06f to Color(0xFF5D4037),
+        0.10f to Color(0xFF6D4C41),
+        0.15f to Color(0xFF4E342E),
+        0.20f to Color(0xFF5D4037),
+        0.24f to Color(0xFF4E342E),
+        0.25f to Color(0xFF21100B), // Gap
+        0.26f to Color(0xFF5D4037),
+        0.30f to Color(0xFF795548),
+        0.35f to Color(0xFF5D4037),
+        0.40f to Color(0xFF4E342E),
+        0.44f to Color(0xFF6D4C41),
+        0.45f to Color(0xFF21100B), // Gap
+        0.46f to Color(0xFF5D4037),
         0.50f to Color(0xFF3E2723),
-        0.60f to Color(0xFF5D4037),
+        0.55f to Color(0xFF5D4037),
+        0.60f to Color(0xFF4E342E),
+        0.64f to Color(0xFF5D4037),
+        0.65f to Color(0xFF21100B), // Gap
+        0.66f to Color(0xFF6D4C41),
+        0.70f to Color(0xFF5D4037),
         0.75f to Color(0xFF795548),
-        0.90f to Color(0xFF5D4037),
-        1.00f to Color(0xFF4E342E)
+        0.80f to Color(0xFF5D4037),
+        0.84f to Color(0xFF4E342E),
+        0.85f to Color(0xFF21100B), // Gap
+        0.86f to Color(0xFF5D4037),
+        0.90f to Color(0xFF6D4C41),
+        0.95f to Color(0xFF4E342E),
+        1.00f to Color(0xFF5D4037)
     )
 
     MaterialTheme {
@@ -418,6 +440,7 @@ fun GameBoardLayout(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Spacer(Modifier.height(50.dp))
         if (isKeyBoardStateInitialized().value) {
             GameBoard(
                 Modifier.fillMaxWidth(0.9f),
@@ -426,7 +449,7 @@ fun GameBoardLayout(
                 rowUpdatedAllMatches = it
             }
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(182.dp))
         KeyBoard(
             Modifier,
             keyDataUpdate.toList(),

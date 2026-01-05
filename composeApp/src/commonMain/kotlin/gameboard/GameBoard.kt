@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import model.ui.game_pieces.RowData
 import model.ui.game_pieces.TileData
@@ -71,10 +72,10 @@ fun GameBoard(modifier: Modifier, rows: List<RowData>, onRowUpdateFinish: (Boole
                 // Background metal sheet
                 drawRect(brush = metalGradient)
                 
-                // Rivets in the corners
-                val rivetColor = Color(0xFF546E7A)
-                val rivetShadow = Color(0xFF37474F)
-                val rivetRadius = 12f
+                // Wood screws in the corners
+                val screwColor = Color(0xFFB0BEC5)
+                val screwShadow = Color(0xFF37474F)
+                val screwRadius = 14f
                 val padding = 30f
                 
                 val corners = listOf(
@@ -87,21 +88,41 @@ fun GameBoard(modifier: Modifier, rows: List<RowData>, onRowUpdateFinish: (Boole
                 corners.forEach { center ->
                     // Shadow for 3D effect
                     drawCircle(
-                        color = rivetShadow,
-                        radius = rivetRadius + 2f,
-                        center = center + Offset(2f, 2f)
+                        color = screwShadow,
+                        radius = screwRadius + 1f,
+                        center = center + Offset(1f, 1f)
                     )
-                    // The rivet
+                    // The screw head
                     drawCircle(
-                        color = rivetColor,
-                        radius = rivetRadius,
+                        color = screwColor,
+                        radius = screwRadius,
                         center = center
                     )
+                    
+                    // The screw slot (Phillips head look)
+                    val slotColor = Color(0xFF455A64)
+                    val slotSize = screwRadius * 0.7f
+                    
+                    drawLine(
+                        color = slotColor,
+                        start = center - Offset(slotSize, 0f),
+                        end = center + Offset(slotSize, 0f),
+                        strokeWidth = 3f,
+                        cap = StrokeCap.Round
+                    )
+                    drawLine(
+                        color = slotColor,
+                        start = center - Offset(0f, slotSize),
+                        end = center + Offset(0f, slotSize),
+                        strokeWidth = 3f,
+                        cap = StrokeCap.Round
+                    )
+
                     // Reflection
                     drawCircle(
-                        color = Color.White.copy(alpha = 0.3f),
-                        radius = rivetRadius / 2,
-                        center = center - Offset(3f, 3f)
+                        color = Color.White.copy(alpha = 0.4f),
+                        radius = 3f,
+                        center = center - Offset(screwRadius/2, screwRadius/2)
                     )
                 }
             }
