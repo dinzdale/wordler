@@ -16,7 +16,7 @@ object WordlerRepo {
         while (wordsAndDefs.size < noWords && tries < NOTRIES) {
             WordlerAPI.getWords(noWords).apply {
                 onSuccess { wordList ->
-                    wordList.forEach { nxtWord ->
+                    wordList.map { it.word }.forEach { nxtWord ->
                         WordlerAPI.getDictionaryDefinition(nxtWord).apply {
                             onSuccess { dictionaryItemList ->
                                 wordsAndDefs[nxtWord] = dictionaryItemList

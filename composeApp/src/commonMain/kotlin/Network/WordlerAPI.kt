@@ -17,9 +17,9 @@ object WordlerAPI {
         }
     }
 
-    suspend fun getWords(noWords: Int = 3, length: Int = 5): Result<List<String>> {
+    suspend fun getWords(noWords: Int = 3, length: Int = 5): Result<RandomWordsContract> {
         return try {
-            val url = getWordsHeroKuapp(noWords,length)
+            val url = getWordsRandomlURL(noWords,length)
             Result.success(client.get(
                 url)
                 .body())
@@ -49,5 +49,7 @@ object WordlerAPI {
     private fun getWordsVercelURL(noWords: Int, length: Int) =
         "https://random-word-api.vercel.app/api?words=${noWords}&length=${length}"
 
+    private fun getWordsRandomlURL(noWords: Int, length: Int) =
+        "https://random-words-api.kushcreates.com/api?words=${noWords}&length=${length}"
 
 }
